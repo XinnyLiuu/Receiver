@@ -5,5 +5,19 @@
 </ion-header>
 
 <ion-content>
+	<ion-item lines="none">
+		<ion-icon slot="start" name="moon"></ion-icon>
+		<ion-toggle id="themeToggle" slot="start" [checked]="isDarkMode"></ion-toggle>
+	</ion-item>
 
+	<ion-list class="ion-padding">
+		<ion-item *ngFor="let chat of chats">
+			<ion-icon size="large" name="contact" slot="start"></ion-icon>
+			<ion-label>
+				<h2>{{chat.contact}}</h2>
+				<h3>{{chat.text}}</h3>
+				<p>{{chat.timestamp}}</p>
+			</ion-label>
+		</ion-item>
+	</ion-list>
 </ion-content>

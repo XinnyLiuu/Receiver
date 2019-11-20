@@ -4,16 +4,17 @@ import { FirebaseService } from '../firebase/firebase.service';
 @Injectable({
 	providedIn: 'root'
 })
-export class UserService extends FirebaseService {
-	private ref; // firebase url
-	public userData; // Object containing user data
-	public isAuthenticated: boolean; // Flag for whether or not the user has been authenticated
+export class UserService {
+	private db; // firebase
+	private ref; // firebase collection reference
+	public isAuthenticated: boolean;
+	public username: string;
 
-	constructor() {
-		super();
+	constructor(private firebaseService: FirebaseService) {
+		this.db = this.firebaseService.db;
 		this.ref = this.db.collection("users");
-		this.userData = {};
 		this.isAuthenticated = localStorage.getItem("isAuth") === null ? false : true;
+		this.username = localStorage.getItem("username");
 	}
 
 	/**
@@ -61,12 +62,18 @@ export class UserService extends FirebaseService {
 	 */
 	async getUserByUsernamePassword(username: string, password: string) {
 		try {
+			// Find a match in users where username and password is the same as the input
 			const querySnapshot = await this.ref.where("username", "==", username).where("password", "==", password).get();
 
-			const userData = querySnapshot[0].data();
+			const userData = {
+				fname: querySnapshot[0].data().fname,
+				lname: querySnapshot[0].data().lname,
+				username: querySnapshot[0].data().username
+			}
+
 			return userData;
 		} catch (err) {
-			return null;
+			throw new Error(err);
 		}
 	}
 
@@ -82,20 +89,21 @@ export class UserService extends FirebaseService {
 
 			return salt;
 		} catch (err) {
-			return null;
+			throw new Error(err);
 		}
 	}
 
 	/**
 	 * Prepares the user data object
 	 * 
-	 * @param userData 
+	 * @param username 
 	 */
-	prepareUser(userData) {
-		this.userData = userData;
+	prepareUser(username: string) {
 		this.isAuthenticated = true;
 
-		// Keep the user logged in via localStorage
 		localStorage.setItem("isAuth", "true");
+		localStorage.setItem("username", username);
 	}
+
+	// TODO: Logout
 }

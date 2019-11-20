@@ -48,21 +48,19 @@ export class LoginPage implements OnInit {
 
 			// If the user exists, prepare their data in userService and redirect them to the messages component
 			if (exists) {
-				// Get the user's salt
+				// Get the user's salt 
 				const salt = await this.userService.getUserSalt(username);
 
-				if (salt !== null || salt !== undefined) {
-					password = this.cryptoService.hash(password, salt);
+				// Hash the password
+				password = this.cryptoService.hash(password, salt);
 
-					// Check if the user with the hash and username exists
-					const userData = await this.userService.getUserByUsernamePassword(username, password);
+				// Get the user's data
+				const userData = await this.userService.getUserByUsernamePassword(username, password);
 
-					if (userData !== null || userData !== undefined) {
-						this.userService.prepareUser(userData);
+				// Prepare the user's session
+				this.userService.prepareUser(userData.username);
 
-						return this.router.navigate(["/messages"]);
-					}
-				}
+				return this.router.navigate(["/messages"]);
 			}
 
 			this.error = true;

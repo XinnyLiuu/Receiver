@@ -24,7 +24,6 @@ export class FirebaseService {
 
 		// Initialize Firebase
 		firebase.initializeApp(firebaseConfig);
-
 		this.db = firebase.firestore();
 	}
 }
