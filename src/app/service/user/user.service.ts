@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { Router } from "@angular/router";
+
 import { FirebaseService } from '../firebase/firebase.service';
 
 @Injectable({
@@ -10,7 +12,10 @@ export class UserService {
 	public isAuthenticated: boolean;
 	public username: string;
 
-	constructor(private firebaseService: FirebaseService) {
+	constructor(
+		private firebaseService: FirebaseService,
+		private router: Router) {
+
 		this.db = this.firebaseService.db;
 		this.ref = this.db.collection("users");
 		this.isAuthenticated = localStorage.getItem("isAuth") === null ? false : true;
@@ -46,8 +51,8 @@ export class UserService {
 	async isUserExists(username: string): Promise<boolean> {
 		try {
 			const doc = await this.ref.doc(username).get();
-
 			if (doc.exists) return true;
+
 			return false;
 		} catch (err) {
 			return false;
@@ -63,15 +68,14 @@ export class UserService {
 	async getUserByUsernamePassword(username: string, password: string) {
 		try {
 			// Find a match in users where username and password is the same as the input
-			const querySnapshot = await this.ref.where("username", "==", username).where("password", "==", password).get();
+			const user = await this.ref.doc(username).get();
+			const userData = user.data();
 
-			const userData = {
-				fname: querySnapshot[0].data().fname,
-				lname: querySnapshot[0].data().lname,
-				username: querySnapshot[0].data().username
+			if (userData.password === password) {
+				return userData.username;
 			}
 
-			return userData;
+			throw new Error();
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -89,6 +93,7 @@ export class UserService {
 
 			return salt;
 		} catch (err) {
+			console.log(err);
 			throw new Error(err);
 		}
 	}
@@ -105,5 +110,10 @@ export class UserService {
 		localStorage.setItem("username", username);
 	}
 
-	// TODO: Logout
+	/**
+	 * Deletes the user session and go back to /login
+	 */
+	logout() {
+		localStorage.clear();
+	}
 }

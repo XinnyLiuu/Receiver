@@ -54,13 +54,15 @@ export class LoginPage implements OnInit {
 				// Hash the password
 				password = this.cryptoService.hash(password, salt);
 
-				// Get the user's data
-				const userData = await this.userService.getUserByUsernamePassword(username, password);
+				// Get the user's username
+				const uname = await this.userService.getUserByUsernamePassword(username, password);
 
 				// Prepare the user's session
-				this.userService.prepareUser(userData.username);
+				this.userService.prepareUser(uname);
 
-				return this.router.navigate(["/messages"]);
+				// Navigate to /messages and force a reload there for firebase to fetch the required documents
+				return this.router.navigate(["/messages"])
+					.then(() => window.location.reload());
 			}
 
 			this.error = true;

@@ -18,9 +18,7 @@ export class RoleGuardService implements CanActivate {
 	 * @param next 
 	 * @param state 
 	 */
-	canActivate(
-		next: ActivatedRouteSnapshot,
-		state: RouterStateSnapshot): boolean {
+	canActivate(): boolean {
 
 		// Check if the user is logged in
 		if (this.userService.isAuthenticated) {

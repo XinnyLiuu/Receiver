@@ -67,9 +67,11 @@ export class RegisterPage implements OnInit {
 
 				if (added) {
 					// Set user data 
-					this.userService.prepareUser(userData);
+					this.userService.prepareUser(userData.username);
 
-					return this.router.navigate(["/messages"]);
+					// Navigate to /messages and force a reload there for firebase to fetch the required documents
+					return this.router.navigate(["/messages"])
+						.then(() => window.location.reload());
 				}
 			}
 

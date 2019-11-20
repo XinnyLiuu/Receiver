@@ -7,12 +7,14 @@
 <ion-content>
 	<ion-item lines="none">
 		<ion-icon slot="start" name="moon"></ion-icon>
-		<ion-toggle id="themeToggle" slot="start" [checked]="isDarkMode"></ion-toggle>
+		<ion-toggle id="themeToggle" slot="start" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-item>
 
 	<ion-list class="ion-padding">
-		<ion-item *ngFor="let chat of chats">
-			<ion-icon size="large" name="contact" slot="start"></ion-icon>
+		<ion-item *ngFor="let chat of chats" button (click)="openChat(chat.contact)">
+			<ion-avatar size="large" slot="start">
+				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+			</ion-avatar>
 			<ion-label>
 				<h2>{{chat.contact}}</h2>
 				<h3>{{chat.text}}</h3>
@@ -20,4 +22,15 @@
 			</ion-label>
 		</ion-item>
 	</ion-list>
+
+	<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+		<ion-fab-button color="warning">
+			<ion-icon name="menu"></ion-icon>
+		</ion-fab-button>
+		<ion-fab-list side="top">
+			<ion-fab-button color="warning" (click)="doLogout()">
+				<ion-icon name="exit"></ion-icon>
+			</ion-fab-button>
+		</ion-fab-list>
+	</ion-fab>
 </ion-content>
