@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AuthGuardService } from "./service/auth-guard/auth-guard.service";
+import { RoleGuardService } from "./service/role-guard/role-guard.service"; 
 
 @NgModule({
 	declarations: [AppComponent],
@@ -23,7 +24,8 @@ import { AuthGuardService } from "./service/auth-guard/auth-guard.service";
 		StatusBar,
 		SplashScreen,
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-		AuthGuardService
+		AuthGuardService,
+		RoleGuardService
 	],
 	bootstrap: [AppComponent]
 })

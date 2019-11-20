@@ -5,7 +5,7 @@ import { FirebaseService } from '../firebase/firebase.service';
 	providedIn: 'root'
 })
 export class UserService extends FirebaseService {
-	private ref: any; // firebase url
+	private ref; // firebase url
 	public userData; // Object containing user data
 	public isAuthenticated: boolean; // Flag for whether or not the user has been authenticated
 
@@ -13,7 +13,7 @@ export class UserService extends FirebaseService {
 		super();
 		this.ref = this.db.collection("users");
 		this.userData = {};
-		this.isAuthenticated = false;
+		this.isAuthenticated = localStorage.getItem("isAuth") === null ? false : true;
 	}
 
 	/**
@@ -45,8 +45,8 @@ export class UserService extends FirebaseService {
 	async isUserExists(username: string): Promise<boolean> {
 		try {
 			const doc = await this.ref.doc(username).get();
-			if (doc.exists) return true;
 
+			if (doc.exists) return true;
 			return false;
 		} catch (err) {
 			return false;
@@ -94,5 +94,8 @@ export class UserService extends FirebaseService {
 	prepareUser(userData) {
 		this.userData = userData;
 		this.isAuthenticated = true;
+
+		// Keep the user logged in via localStorage
+		localStorage.setItem("isAuth", "true");
 	}
 }

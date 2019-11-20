@@ -7,7 +7,7 @@ import "firebase/analytics";
 	providedIn: 'root'
 })
 export class FirebaseService {
-	public db: any;
+	public db;
 
 	constructor() {
 		// Config for Firebase
@@ -24,10 +24,7 @@ export class FirebaseService {
 
 		// Initialize Firebase
 		firebase.initializeApp(firebaseConfig);
-		// firebase.analytics();
 
 		this.db = firebase.firestore();
-
-		console.log(this.db);
 	}
 }

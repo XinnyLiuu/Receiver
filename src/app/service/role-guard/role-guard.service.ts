@@ -6,14 +6,14 @@ import { UserService } from "../user/user.service";
 @Injectable({
 	providedIn: 'root'
 })
-export class AuthGuardService implements CanActivate {
+export class RoleGuardService implements CanActivate {
 	constructor(
 		private userService: UserService,
 		private router: Router) {
 	}
 
 	/**
-	 * Verifies that the user is authenticated otherwise the route will redirect to /login
+	 * Verifies that the user is ALREADY authenticated so redirect them to /messages
 	 * 
 	 * @param next 
 	 * @param state 
@@ -23,10 +23,12 @@ export class AuthGuardService implements CanActivate {
 		state: RouterStateSnapshot): boolean {
 
 		// Check if the user is logged in
-		if (this.userService.isAuthenticated) return true;
+		if (this.userService.isAuthenticated) {
+			this.router.navigate(["/messages"])
+			return false;
+		}
 
 		// Redirect if they are not
-		this.router.navigate(["/login"]);
-		return false;
+		return true;
 	}
 }

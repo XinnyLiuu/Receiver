@@ -1,17 +1,21 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+
 import { AuthGuardService } from './service/auth-guard/auth-guard.service';
+import { RoleGuardService } from "./service/role-guard/role-guard.service";
 
 const routes: Routes = [
 	{
-		path: '', redirectTo: 'register', pathMatch: 'full'
+		path: '', redirectTo: 'login', pathMatch: 'full'
 	},
 	{
 		path: 'login',
+		canActivate: [RoleGuardService],
 		loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule)
 	},
 	{
 		path: 'register',
+		canActivate: [RoleGuardService],
 		loadChildren: () => import('./register/register.module').then(m => m.RegisterPageModule)
 	},
 	{
