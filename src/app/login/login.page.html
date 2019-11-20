@@ -1,0 +1,33 @@
+<ion-header no-border>
+	<ion-toolbar>
+		<ion-title>Login</ion-title>
+	</ion-toolbar>
+</ion-header>
+
+<ion-toolbar [hidden]="!error" color="danger">
+	<ion-title>An error has occured!</ion-title>
+</ion-toolbar>
+
+<ion-content class="ion-padding">
+	<form [formGroup]="loginForm" (ngSubmit)="login(loginForm.value)">
+		<ion-list>
+			<ion-item>
+				<ion-label position="stacked">
+					Username<ion-text color="danger"> *</ion-text>
+				</ion-label>
+				<ion-input required type="text" name="username" formControlName="username"></ion-input>
+			</ion-item>
+
+			<ion-item>
+				<ion-label position="stacked">
+					Password<ion-text color="danger"> *</ion-text>
+				</ion-label>
+				<ion-input required type="password" name="password" formControlName="password"></ion-input>
+			</ion-item>
+
+			<ion-button [disabled]="!loginForm.valid" type="submit" expand="block">Login</ion-button>
+
+			<ion-button (click)="toRegister()" color="light" expand="block">Don't have an account? Register</ion-button>
+		</ion-list>
+	</form>
+</ion-content>
