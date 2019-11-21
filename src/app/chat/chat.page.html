@@ -36,12 +36,9 @@
 
 <ion-footer>
 	<form [formGroup]="messageForm" (ngSubmit)="sendMessage(messageForm.value)">
-
 		<ion-item lines="inset" class="ion-padding">
-
 			<ion-textarea required type="text" name="message" formControlName="message" color="dark"
 				placeholder="Send a message"></ion-textarea>
-
 			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning">Send</ion-button>
 		</ion-item>
 	</form>

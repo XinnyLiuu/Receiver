@@ -65,7 +65,6 @@ export class MessagesPage implements OnInit {
 			});
 
 			this.sent = sentMessages;
-			console.log(sentMessages);
 		});
 
 		// Get all the messages where the current user is the recipient

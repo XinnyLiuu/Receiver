@@ -49,46 +49,38 @@ export class ChatPage implements OnInit {
 		const username = this.userService.username;
 		const ref = this.messageService.ref;
 
-		ref.where("sender", "==", username)
-			.where("recipient", "==", this.contact)
+		// Get messages for the chat
+		ref.where("sender", "in", [username, this.contact])
 			.onSnapshot(querySnapshot => {
 				let allMessages = [];
-
 				let sent = [];
+				let received = [];
+
 				querySnapshot.forEach(doc => {
-					sent.push({
-						sender: doc.data().sender,
-						text: doc.data().message,
-						timestamp: doc.data().timestamp,
-						sent: true
-					})
+					if (doc.data().sender === username && doc.data().recipient === this.contact) {
+						sent.push({
+							sender: doc.data().sender,
+							text: doc.data().message,
+							timestamp: doc.data().timestamp,
+							sent: true
+						})
+					}
+
+					if (doc.data().sender === this.contact && doc.data().recipient === username) {
+						received.push({
+							sender: doc.data().sender,
+							text: doc.data().message,
+							timestamp: doc.data().timestamp,
+							sent: false
+						})
+					}
 				});
 
-				ref.where("sender", "==", this.contact)
-					.where("recipient", "==", username)
-					.onSnapshot(querySnapshot => {
+				sent.forEach(m => allMessages.push(m));
+				received.forEach(m => allMessages.push(m));
 
-						let received = [];
-						querySnapshot.forEach(doc => {
-							received.push({
-								sender: doc.data().sender,
-								text: doc.data().message,
-								timestamp: doc.data().timestamp,
-								sent: false
-							})
-						});
-
-						sent.forEach(s => {
-							allMessages.push(s);
-						});
-
-						received.forEach(r => { 
-							allMessages.push(r);
-						});
-
-						allMessages.sort((a, b) => (a.timestamp >= b.timestamp) ? 1 : -1);
-						this.messages = allMessages;
-					})
+				allMessages.sort((a, b) => a.timestamp >= b.timestamp ? 1 : -1);
+				this.messages = allMessages;
 			});
 
 		// Prepare the messaging form
