@@ -19,9 +19,9 @@ export class MessagesPage implements OnInit {
 
 	constructor(
 		private router: Router,
+		private darkModeService: DarkModeService,
 		private messageService: MessagesService,
-		private userService: UserService,
-		private darkModeService: DarkModeService) {
+		private userService: UserService) {
 	}
 
 	ngOnInit() {
@@ -34,9 +34,8 @@ export class MessagesPage implements OnInit {
 		this.messages = this.messageService.getMessagesForUser(this.username);
 
 		// Dark Mode
-		const toggle: any = document.querySelector('#themeToggle');
-		this.isDarkMode = this.darkModeService.isDarkMode;
-		this.darkModeService.toggleDarkMode(toggle);
+		this.darkModeService.init();
+		this.isDarkMode = this.darkModeService.getIsDarkMode();
 	}
 
 	/**

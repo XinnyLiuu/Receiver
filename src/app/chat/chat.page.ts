@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
+import { IonContent } from "@ionic/angular";
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
-import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 
 @Component({
 	selector: 'app-chat',
@@ -14,15 +14,14 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 export class ChatPage implements OnInit {
 	private messageForm: FormGroup;
 	private contact: string;
-	private isDarkMode: boolean;
 	private messages: Array<any>;
 	private error: boolean;
+	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
 		private formBuilder: FormBuilder,
 		private router: Router,
 		private route: ActivatedRoute,
-		private darkModeService: DarkModeService,
 		private messageService: MessagesService,
 		private userService: UserService) {
 	}
@@ -80,17 +79,15 @@ export class ChatPage implements OnInit {
 
 				allMessages.sort((a, b) => a.timestamp >= b.timestamp ? 1 : -1);
 				this.messages = allMessages;
+
+				// Scroll to the bottom after messages are generated
+				this.content.scrollToBottom();
 			});
 
 		// Prepare the messaging form
 		this.messageForm = this.formBuilder.group({
 			message: ""
 		});
-
-		// Dark Mode
-		const toggle: any = document.querySelector('#themeToggle');
-		this.isDarkMode = this.darkModeService.isDarkMode;
-		this.darkModeService.toggleDarkMode(toggle);
 
 		// Default error to false
 		this.error = false;
@@ -109,7 +106,10 @@ export class ChatPage implements OnInit {
 			const success = await this.messageService.createMessage(username, this.contact, message);
 
 			if (!success) this.error = true;
-			else this.messageForm.reset();
+			else {
+				this.messageForm.reset();
+				this.content.scrollToBottom();
+			}
 		} catch (err) {
 			this.error = true;
 		}
