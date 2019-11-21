@@ -11,20 +11,38 @@
 	</ion-toolbar>
 </ion-header>
 
+<ion-toolbar [hidden]="!error" color="danger">
+	<ion-title>An error has occured!</ion-title>
+</ion-toolbar>
+
 <ion-content>
-	<ion-list class="ion-padding">
+	<ion-list class="ion-padding" #content>
 		<ion-item *ngFor="let message of messages">
-			<ion-label>
+			<ion-label *ngIf="message.sent" color="dark">
 				<h2>{{message.text}}</h2>
+				<p>{{message.sender}}</p>
 				<p>{{message.timestamp}}</p>
+				<p>{{message.sent}}</p>
+			</ion-label>
+			<ion-label *ngIf="!message.sent" color="warning">
+				<h2>{{message.text}}</h2>
+				<p>{{message.sender}}</p>
+				<p>{{message.timestamp}}</p>
+				<p>{{message.sent}}</p>
 			</ion-label>
 		</ion-item>
 	</ion-list>
 </ion-content>
 
 <ion-footer>
-	<ion-item lines="inset" class="ion-padding">
-		<ion-textarea color="dark" placeholder="Send a message"></ion-textarea>
-		<ion-button slot="end" color="warning">Send</ion-button>
-	</ion-item>
+	<form [formGroup]="messageForm" (ngSubmit)="sendMessage(messageForm.value)">
+
+		<ion-item lines="inset" class="ion-padding">
+
+			<ion-textarea required type="text" name="message" formControlName="message" color="dark"
+				placeholder="Send a message"></ion-textarea>
+
+			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning">Send</ion-button>
+		</ion-item>
+	</form>
 </ion-footer>

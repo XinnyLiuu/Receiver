@@ -11,8 +11,10 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 	styleUrls: ['./messages.page.scss'],
 })
 export class MessagesPage implements OnInit {
-	private chats: Array<any>;
+	private received: Array<any>; // List of received messages
+	private sent: Array<any>; // List of sent messages
 	private isDarkMode: boolean;
+	private username: string;
 
 	constructor(
 		private router: Router,
@@ -22,44 +24,85 @@ export class MessagesPage implements OnInit {
 	}
 
 	ngOnInit() {
-		// Get all chats that the user has from firestore via realtime
-		this.chats = [];
-		const username = this.userService.username;
+		this.received = [];
+		this.sent = [];
+		this.username = this.userService.username;
+
+		// Firebase realtime calls
 		const ref = this.messageService.ref;
 
-		ref.where("sender", "==", username)
-			.onSnapshot(querySnapshot => {
-				let conversations = []; // Store all conversations where the user is the sender
-				let recipients = new Set(); // Keep a set of recipients to avoid duplicate conversations
+		// Get all the messages where the current user is the sender
+		ref.where("sender", "==", this.username).onSnapshot(querySnapshot => {
 
-				querySnapshot.forEach(doc => {
-					const recipient = doc.data().recipient;
-					const text = doc.data().text;
-					const timestamp = doc.data().timestamp;
+			// Keep a set of recipients to avoid duplicate conversations
+			let recipients = new Set();
 
-					// Check if this recipient already shows up on the list of chats and show the most recent conversation
-					if (recipients.has(recipient)) {
-						conversations.forEach(c => {
-							if (c.contact === recipient &&
-								Date.parse(timestamp) > Date.parse(c.timestamp)) {
-								c.text = text;
-								c.timestamp = timestamp;
-							}
-						});
-					}
-					else {
-						conversations.push({
-							contact: recipient,
-							text: text,
-							timestamp: timestamp
-						});
+			let sentMessages = [];
+			querySnapshot.forEach(doc => {
+				const recipient = doc.data().recipient;
+				const text = doc.data().message;
+				const timestamp = doc.data().timestamp;
 
-						recipients.add(recipient);
-					}
-				});
+				// Check if this recipient already shows up on the list of chats and show the most recent conversation
+				if (recipients.has(recipient)) {
+					sentMessages.forEach(c => {
+						if (c.contact === recipient &&
+							Date.parse(timestamp) > Date.parse(c.timestamp)) {
+							c.text = text;
+							c.timestamp = timestamp;
+						}
+					});
+				}
+				else {
+					sentMessages.push({
+						contact: recipient,
+						text: text,
+						timestamp: timestamp
+					});
 
-				this.chats = conversations;
+					recipients.add(recipient);
+				}
 			});
+
+			this.sent = sentMessages;
+			console.log(sentMessages);
+		});
+
+		// Get all the messages where the current user is the recipient
+		ref.where("recipient", "==", this.username).onSnapshot(querySnapshot => {
+
+			// Keep a set of senders to avoid duplicate conversations
+			let senders = new Set();
+
+			let receivedMessages = [];
+			querySnapshot.forEach(doc => {
+				const sender = doc.data().sender;
+				const text = doc.data().message;
+				const timestamp = doc.data().timestamp;
+
+				// Check if this sender already shows up on the list of chats and show the most recent conversation
+				if (senders.has(sender)) {
+					receivedMessages.forEach(c => {
+						if (c.contact === sender &&
+							Date.parse(timestamp) > Date.parse(c.timestamp)) {
+							c.text = text;
+							c.timestamp = timestamp;
+						}
+					});
+				}
+				else {
+					receivedMessages.push({
+						contact: sender,
+						text: text,
+						timestamp: timestamp
+					});
+
+					senders.add(sender);
+				}
+			});
+
+			this.received = receivedMessages;
+		});
 
 		// Dark Mode
 		const toggle: any = document.querySelector('#themeToggle');

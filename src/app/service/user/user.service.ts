@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Router } from "@angular/router";
 
 import { FirebaseService } from '../firebase/firebase.service';
 
@@ -12,13 +11,13 @@ export class UserService {
 	public isAuthenticated: boolean;
 	public username: string;
 
-	constructor(
-		private firebaseService: FirebaseService,
-		private router: Router) {
-
+	constructor(private firebaseService: FirebaseService) {
 		this.db = this.firebaseService.db;
 		this.ref = this.db.collection("users");
-		this.isAuthenticated = localStorage.getItem("isAuth") === null ? false : true;
+
+		if (localStorage.getItem("isAuth") === null) this.isAuthenticated = false;
+		else this.isAuthenticated = true;
+
 		this.username = localStorage.getItem("username");
 	}
 
