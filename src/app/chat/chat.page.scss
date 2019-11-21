@@ -1,3 +1,75 @@
 ion-item {
     --highlight-color-focused: #ffd31a;
 }
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+ul li {
+    display: inline-block;
+    clear: both;
+    padding: 20px;
+    border-radius: 30px;
+    margin-bottom: 2px;
+}
+
+.him {
+    color: #000000;
+    background: #eee;
+    float: left;
+}
+
+.me {
+    float: right;
+    position: relative;
+    background: #ffd31a;
+    color: #000000;
+}
+
+.me-timestamp {
+    float: right;
+}
+
+.him+.me {
+    border-bottom-right-radius: 5px;
+}
+
+.me+.me {
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+
+.me:last-of-type {
+    border-bottom-right-radius: 30px;
+}
+
+/* https://www.w3schools.com/css/css_tooltip.asp */
+/* Tooltip container */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+/* Tooltip text */
+.tooltip .tooltiptext {
+    visibility: hidden;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    padding: 5px 0;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    width: 120px;
+}
+
+.right {
+    right: 105%;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

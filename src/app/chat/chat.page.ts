@@ -49,8 +49,7 @@ export class ChatPage implements OnInit {
 		const username = this.userService.username;
 		const ref = this.messageService.ref;
 
-		// Get messages for the chat
-		ref.where("sender", "in", [username, this.contact])
+		ref.where("sender", "in", [username, this.contact]) // Firebase query
 			.onSnapshot(querySnapshot => {
 				let allMessages = [];
 				let sent = [];
@@ -61,7 +60,7 @@ export class ChatPage implements OnInit {
 						sent.push({
 							sender: doc.data().sender,
 							text: doc.data().message,
-							timestamp: doc.data().timestamp,
+							timestamp: new Date(doc.data().timestamp).toLocaleString(),
 							sent: true
 						})
 					}
@@ -70,7 +69,7 @@ export class ChatPage implements OnInit {
 						received.push({
 							sender: doc.data().sender,
 							text: doc.data().message,
-							timestamp: doc.data().timestamp,
+							timestamp: new Date(doc.data().timestamp).toLocaleString(),
 							sent: false
 						})
 					}
@@ -109,9 +108,8 @@ export class ChatPage implements OnInit {
 
 			const success = await this.messageService.createMessage(username, this.contact, message);
 
-			if (!success) {
-				this.error = true;
-			}
+			if (!success) this.error = true;
+			else this.messageForm.reset();
 		} catch (err) {
 			this.error = true;
 		}

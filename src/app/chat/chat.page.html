@@ -17,20 +17,23 @@
 
 <ion-content>
 	<ion-list class="ion-padding" #content>
-		<ion-item *ngFor="let message of messages">
-			<ion-label *ngIf="message.sent" color="dark">
-				<h2>{{message.text}}</h2>
-				<p>{{message.sender}}</p>
-				<p>{{message.timestamp}}</p>
-				<p>{{message.sent}}</p>
-			</ion-label>
-			<ion-label *ngIf="!message.sent" color="warning">
-				<h2>{{message.text}}</h2>
-				<p>{{message.sender}}</p>
-				<p>{{message.timestamp}}</p>
-				<p>{{message.sent}}</p>
-			</ion-label>
-		</ion-item>
+		<ul>
+			<span *ngFor="let message of messages">
+				<span *ngIf="message.sent">
+					<li [ngClass]="{'me tooltip': message.sent}">
+						{{message.text}}
+						<span class="tooltiptext right">{{message.timestamp}}</span>
+					</li>
+				</span>
+
+				<span *ngIf="!message.sent">
+					<li [ngClass]="{'him tooltip': !message.sent}">
+						{{message.text}}
+						<span class="tooltiptext">{{message.timestamp}}</span>
+					</li>
+				</span>
+			</span>
+		</ul>
 	</ion-list>
 </ion-content>
 

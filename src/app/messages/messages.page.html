@@ -9,26 +9,7 @@
 
 <ion-content>
 	<ion-list class="ion-padding">
-		<ion-list-header>
-			Received Messages
-		</ion-list-header>
-		<ion-item button *ngFor="let message of received" (click)="openChat(message.contact)">
-			<ion-avatar size="large" slot="start">
-				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
-			</ion-avatar>
-			<ion-label>
-				<h2>{{message.contact}}</h2>
-				<h3>{{message.text}}</h3>
-				<p>{{message.timestamp}}</p>
-			</ion-label>
-		</ion-item>
-	</ion-list>
-
-	<ion-list class="ion-padding">
-		<ion-list-header>
-			Sent Messages
-		</ion-list-header>
-		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">
+		<ion-item button *ngFor="let message of messages | async" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
 				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
 			</ion-avatar>
