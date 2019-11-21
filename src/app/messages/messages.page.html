@@ -1,17 +1,15 @@
 <ion-header no-border>
 	<ion-toolbar>
 		<ion-title>Messages</ion-title>
+		
+		<ion-icon slot="end" name="moon"></ion-icon>
+		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-	<ion-item lines="none">
-		<ion-icon slot="start" name="moon"></ion-icon>
-		<ion-toggle id="themeToggle" slot="start" color="warning" [checked]="isDarkMode"></ion-toggle>
-	</ion-item>
-
 	<ion-list class="ion-padding">
-		<ion-item *ngFor="let chat of chats" button (click)="openChat(chat.contact)">
+		<ion-item button *ngFor="let chat of chats" (click)="openChat(chat.contact)">
 			<ion-avatar size="large" slot="start">
 				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
 			</ion-avatar>

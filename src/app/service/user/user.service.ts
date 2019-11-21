@@ -93,7 +93,6 @@ export class UserService {
 
 			return salt;
 		} catch (err) {
-			console.log(err);
 			throw new Error(err);
 		}
 	}

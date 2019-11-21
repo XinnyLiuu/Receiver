@@ -23,6 +23,10 @@ const routes: Routes = [
 		canActivate: [AuthGuardService],
 		loadChildren: () => import('./messages/messages.module').then(m => m.MessagesPageModule)
 	},
+	{
+		path: 'chat/:contact',
+		loadChildren: () => import('./chat/chat.module').then(m => m.ChatPageModule)
+	},
 ];
 
 @NgModule({

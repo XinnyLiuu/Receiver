@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
+import { CanActivate, Router } from '@angular/router';
 
 import { UserService } from "../user/user.service";
 
@@ -14,9 +14,6 @@ export class AuthGuardService implements CanActivate {
 
 	/**
 	 * Verifies that the user is authenticated otherwise the route will redirect to /login
-	 * 
-	 * @param next 
-	 * @param state 
 	 */
 	canActivate(): boolean {
 		// Check if the user is logged in

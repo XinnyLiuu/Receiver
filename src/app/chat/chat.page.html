@@ -1,0 +1,30 @@
+<ion-header no-border>
+	<ion-toolbar>
+		<ion-buttons slot="start">
+			<ion-back-button></ion-back-button>
+		</ion-buttons>
+
+		<ion-title>{{contact}}</ion-title>
+
+		<ion-icon slot="end" name="moon"></ion-icon>
+		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
+	</ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<ion-list class="ion-padding">
+		<ion-item *ngFor="let message of messages">
+			<ion-label>
+				<h2>{{message.text}}</h2>
+				<p>{{message.timestamp}}</p>
+			</ion-label>
+		</ion-item>
+	</ion-list>
+</ion-content>
+
+<ion-footer>
+	<ion-item lines="inset" class="ion-padding">
+		<ion-textarea color="dark" placeholder="Send a message"></ion-textarea>
+		<ion-button slot="end" color="warning">Send</ion-button>
+	</ion-item>
+</ion-footer>
