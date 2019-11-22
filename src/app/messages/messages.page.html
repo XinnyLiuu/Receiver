@@ -1,12 +1,26 @@
 <ion-header>
 	<ion-toolbar>
-		<ion-title>Messages for {{username}}</ion-title>
+		<ion-title>Messages for {{fullName}}</ion-title>
 		<ion-icon slot="end" name="moon"></ion-icon>
 		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-toolbar>
 </ion-header>
 
 <ion-content>
+	<ion-list class="ion-padding">
+		<ion-list-header>Received</ion-list-header>
+		<ion-item button *ngFor="let message of received" (click)="openChat(message.contact)">
+			<ion-avatar size="large" slot="start">
+				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+			</ion-avatar>
+			<ion-label>
+				<h2>{{message.contact}}</h2>
+				<h3>{{message.text}}</h3>
+				<p>{{message.timestamp}}</p>
+			</ion-label>
+		</ion-item>
+	</ion-list>
+
 	<ion-list class="ion-padding">
 		<ion-list-header>Sent</ion-list-header>
 		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">

@@ -12,8 +12,10 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 })
 export class MessagesPage implements OnInit {
 	private sent: Array<any>; // List of sent messages
+	private received: Array<any>; // List of received messages
 	private isDarkMode: boolean;
 	private username: string;
+	private fullName: string;
 
 	constructor(
 		private router: Router,
@@ -25,8 +27,10 @@ export class MessagesPage implements OnInit {
 	ngOnInit() {
 		// Get all the messages where the current user is involved
 		this.sent = [];
-		this.username = this.userService.username;
+		this.username = this.userService.getUsername();
+		this.fullName = this.userService.getFullName();
 		this.getSentMessages();
+		this.getNewMessages();
 
 		// Dark Mode
 		this.darkModeService.init();
@@ -80,6 +84,56 @@ export class MessagesPage implements OnInit {
 				})
 
 				this.sent = sent;
+			});
+	}
+
+	/**
+	 * Query firebase for sent messages
+	 */
+	getNewMessages() {
+		this.messageService.getRef()
+			.where("recipient", "==", this.username)
+			.onSnapshot(querySnapshot => {
+				let received = [];
+				let data = [];
+
+				// Keep a set of recipients to avoid duplicate conversations
+				let recipients = {};
+
+				// Gather the documents
+				querySnapshot.forEach(doc => {
+					data.push(doc.data());
+				});
+
+				// Sort documents 
+				data.sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
+
+				// Go through each document
+				data.forEach(d => {
+					const contact = d.recipient;
+					const message = d.message;
+					const timestamp = d.timestamp;
+
+					if (recipients.hasOwnProperty(contact) && recipients[contact].timestamp < timestamp) {
+						recipients[contact] = {
+							text: message,
+							timestamp: new Date(timestamp).toLocaleString()
+						}
+					} else {
+						recipients[contact] = {
+							contact: contact,
+							text: message,
+							timestamp: new Date(timestamp).toLocaleString()
+						};
+					}
+				});
+
+				// Go through each recipient and add it to the message array
+				Object.keys(recipients).forEach(r => {
+					received.push(recipients[r]);
+				})
+
+				this.received = received;
 			});
 	}
 

@@ -38,6 +38,13 @@ export class UserService {
 	}
 
 	/**
+	 * Returns full name
+	 */
+	getFullName() {
+		return this.fullName;
+	}
+
+	/**
 	 * Add a user to the Users collection
 	 */
 	async addUser(userData: any): Promise<boolean> {

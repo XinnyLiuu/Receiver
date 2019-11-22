@@ -21,7 +21,7 @@ export class RoleGuardService implements CanActivate {
 	canActivate(): boolean {
 
 		// Check if the user is logged in
-		if (this.userService.isAuthenticated) {
+		if (this.userService.getIsAuthenticated()) {
 			this.router.navigate(["/messages"])
 			return false;
 		}
