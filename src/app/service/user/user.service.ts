@@ -8,8 +8,9 @@ import { FirebaseService } from '../firebase/firebase.service';
 export class UserService {
 	private db; // firebase
 	private ref; // firebase collection reference
-	public isAuthenticated: boolean;
-	public username: string;
+	private isAuthenticated: boolean;
+	private username: string;
+	private fullName: string;
 
 	constructor(private firebaseService: FirebaseService) {
 		this.db = this.firebaseService.db;
@@ -19,6 +20,21 @@ export class UserService {
 		else this.isAuthenticated = true;
 
 		this.username = localStorage.getItem("username");
+		this.fullName = localStorage.getItem("fullName");
+	}
+
+	/**
+	 * Returns isAuthenticated
+	 */
+	getIsAuthenticated() {
+		return this.isAuthenticated;
+	}
+
+	/**
+	 * Returns username
+	 */
+	getUsername() {
+		return this.username;
 	}
 
 	/**
@@ -71,7 +87,13 @@ export class UserService {
 			const userData = user.data();
 
 			if (userData.password === password) {
-				return userData.username;
+				let data = {
+					username: userData.username,
+					fname: userData.fname,
+					lname: userData.lname
+				};
+
+				return data;
 			}
 
 			throw new Error();
@@ -101,11 +123,12 @@ export class UserService {
 	 * 
 	 * @param username 
 	 */
-	prepareUser(username: string) {
+	prepareUser(firstname: string, lastname: string, username: string) {
 		this.isAuthenticated = true;
 
 		localStorage.setItem("isAuth", "true");
 		localStorage.setItem("username", username);
+		localStorage.setItem("fullName", `${firstname} ${lastname}`);
 	}
 
 	/**

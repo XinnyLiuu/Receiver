@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 
 import { UserService } from "../service/user/user.service";
 import { CryptoService } from "../service/crypto/crypto.service";
+import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 
 @Component({
 	selector: 'app-register',
@@ -13,8 +14,10 @@ import { CryptoService } from "../service/crypto/crypto.service";
 export class RegisterPage implements OnInit {
 	private registerForm: FormGroup;
 	private error: boolean;
+	private isDarkMode: boolean;
 
 	constructor(
+		private darkModeService: DarkModeService,
 		private cryptoService: CryptoService,
 		private userService: UserService,
 		private formBuilder: FormBuilder,
@@ -29,6 +32,10 @@ export class RegisterPage implements OnInit {
 			username: "",
 			password: ""
 		});
+
+		// Dark Mode
+		this.darkModeService.init();
+		this.isDarkMode = this.darkModeService.getIsDarkMode();
 
 		// Default error to false
 		this.error = false;
@@ -48,7 +55,7 @@ export class RegisterPage implements OnInit {
 			fname.charAt(0).toUpperCase();
 			lname.charAt(0).toUpperCase();
 
-			const exists = await this.userService.isUserExists(username);
+			const exists = await this.userService.isUserExists(username.trim().toLowerCase());
 
 			// If the user does not exist then add the user to db
 			if (!exists) {
@@ -67,7 +74,7 @@ export class RegisterPage implements OnInit {
 
 				if (added) {
 					// Set user data 
-					this.userService.prepareUser(userData.username);
+					this.userService.prepareUser(userData.fname, userData.lname, userData.username);
 
 					// Navigate to /messages and force a reload there for firebase to fetch the required documents
 					return this.router.navigate(["/messages"])

@@ -43,12 +43,10 @@ export class ChatPage implements OnInit {
 			}
 		});
 
-		// Get all messages the current user has with all the contact
+		// Get all messages the current user has with the contact
 		this.messages = [];
 		const username = this.userService.username;
-		const ref = this.messageService.ref;
-
-		ref.where("sender", "in", [username, this.contact]) // Firebase query
+		this.messageService.getRef().where("sender", "in", [username, this.contact]) // Firebase query
 			.onSnapshot(querySnapshot => {
 				let allMessages = [];
 				let sent = [];

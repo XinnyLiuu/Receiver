@@ -1,7 +1,6 @@
-<ion-header no-border>
+<ion-header>
 	<ion-toolbar>
 		<ion-title>Messages for {{username}}</ion-title>
-
 		<ion-icon slot="end" name="moon"></ion-icon>
 		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-toolbar>
@@ -9,7 +8,8 @@
 
 <ion-content>
 	<ion-list class="ion-padding">
-		<ion-item button *ngFor="let message of messages | async" (click)="openChat(message.contact)">
+		<ion-list-header>Sent</ion-list-header>
+		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
 				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
 			</ion-avatar>
@@ -21,14 +21,26 @@
 		</ion-item>
 	</ion-list>
 
-	<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+	<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
 		<ion-fab-button color="warning">
 			<ion-icon name="menu"></ion-icon>
 		</ion-fab-button>
 		<ion-fab-list side="top">
-			<ion-fab-button color="warning" (click)="doLogout()">
+			<ion-fab-button color="light" (click)="doLogout()">
 				<ion-icon name="exit"></ion-icon>
+			</ion-fab-button>
+			<ion-fab-button color="light">
+				<ion-icon name="contacts"></ion-icon>
+			</ion-fab-button>
+			<ion-fab-button color="light ">
+				<ion-icon name="settings"></ion-icon>
 			</ion-fab-button>
 		</ion-fab-list>
 	</ion-fab>
 </ion-content>
+
+<ion-footer>
+	<ion-toolbar>
+		<ion-title>Receiver</ion-title>
+	</ion-toolbar>
+</ion-footer>

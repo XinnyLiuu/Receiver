@@ -1,6 +1,8 @@
-<ion-header no-border>
+<ion-header>
 	<ion-toolbar>
-		<ion-title>Login</ion-title>
+		<ion-title>Receiver</ion-title>
+		<ion-icon slot="end" name="moon"></ion-icon>
+		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-toolbar>
 </ion-header>
 
@@ -25,7 +27,7 @@
 				<ion-input required type="password" name="password" formControlName="password"></ion-input>
 			</ion-item>
 
-			<ion-button [disabled]="!loginForm.valid" type="submit" expand="block">Login</ion-button>
+			<ion-button [disabled]="!loginForm.valid" color="warning" type="submit" expand="block">Login</ion-button>
 
 			<ion-button (click)="toRegister()" color="light" expand="block">Don't have an account? Register</ion-button>
 		</ion-list>

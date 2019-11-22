@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 
 import { UserService } from "../service/user/user.service";
 import { CryptoService } from "../service/crypto/crypto.service";
+import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 
 @Component({
 	selector: 'app-login',
@@ -13,8 +14,10 @@ import { CryptoService } from "../service/crypto/crypto.service";
 export class LoginPage implements OnInit {
 	private loginForm: FormGroup;
 	private error: boolean;
+	private isDarkMode: boolean;
 
 	constructor(
+		private darkModeService: DarkModeService,
 		private cryptoService: CryptoService,
 		private userService: UserService,
 		private formBuilder: FormBuilder,
@@ -27,6 +30,10 @@ export class LoginPage implements OnInit {
 			username: "",
 			password: ""
 		});
+
+		// Dark Mode
+		this.darkModeService.init();
+		this.isDarkMode = this.darkModeService.getIsDarkMode();
 
 		// Default error to false
 		this.error = false;
@@ -54,11 +61,11 @@ export class LoginPage implements OnInit {
 				// Hash the password
 				password = this.cryptoService.hash(password, salt);
 
-				// Get the user's username
-				const uname = await this.userService.getUserByUsernamePassword(username, password);
+				// Get the user's data
+				const data = await this.userService.getUserByUsernamePassword(username, password);
 
 				// Prepare the user's session
-				this.userService.prepareUser(uname);
+				this.userService.prepareUser(data.fname, data.lname, data.username);
 
 				// Navigate to /messages and force a reload there for firebase to fetch the required documents
 				return this.router.navigate(["/messages"])

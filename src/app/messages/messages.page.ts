@@ -11,9 +11,7 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 	styleUrls: ['./messages.page.scss'],
 })
 export class MessagesPage implements OnInit {
-	private messages: Promise<Array<any>>; // List of received messages
-	// private messages: Array<any>; // List of received messages
-
+	private sent: Array<any>; // List of sent messages
 	private isDarkMode: boolean;
 	private username: string;
 
@@ -25,17 +23,64 @@ export class MessagesPage implements OnInit {
 	}
 
 	ngOnInit() {
-		this.username = this.userService.username;
-
-		// Firebase realtime calls
-		const ref = this.messageService.ref;
-
 		// Get all the messages where the current user is involved
-		this.messages = this.messageService.getMessagesForUser(this.username);
+		this.sent = [];
+		this.username = this.userService.username;
+		this.getSentMessages();
 
 		// Dark Mode
 		this.darkModeService.init();
 		this.isDarkMode = this.darkModeService.getIsDarkMode();
+	}
+
+	/**
+	 * Query firebase for all messages
+	 */
+	getSentMessages() {
+		this.messageService.getRef()
+			.where("sender", "==", this.username)
+			.onSnapshot(querySnapshot => {
+				let sent = [];
+				let data = [];
+
+				// Keep a set of recipients to avoid duplicate conversations
+				let recipients = {};
+
+				// Gather the documents
+				querySnapshot.forEach(doc => {
+					data.push(doc.data());
+				});
+
+				// Sort documents 
+				data.sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
+
+				// Go through each document
+				data.forEach(d => {
+					const contact = d.recipient;
+					const message = d.message;
+					const timestamp = d.timestamp;
+
+					if (recipients.hasOwnProperty(contact) && recipients[contact].timestamp < timestamp) {
+						recipients[contact] = {
+							text: message,
+							timestamp: new Date(timestamp).toLocaleString()
+						}
+					} else {
+						recipients[contact] = {
+							contact: contact,
+							text: message,
+							timestamp: new Date(timestamp).toLocaleString()
+						};
+					}
+				});
+
+				// Go through each recipient and add it to the message array
+				Object.keys(recipients).forEach(r => {
+					sent.push(recipients[r]);
+				})
+
+				this.sent = sent;
+			});
 	}
 
 	/**
