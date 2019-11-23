@@ -16,33 +16,33 @@ ul li {
     margin-bottom: 2px;
 }
 
-.him {
+.current-user {
     color: #000000;
+    background: #ffd31a;
+    float: right;
+}
+
+.contact {
+    float: left;
+    position: relative;
     background: #eee;
+    color: #000000;
+}
+
+.current-user-timestamp {
     float: left;
 }
 
-.me {
-    float: right;
-    position: relative;
-    background: #ffd31a;
-    color: #000000;
-}
-
-.me-timestamp {
-    float: right;
-}
-
-.him+.me {
+.current-user+.contact {
     border-bottom-right-radius: 5px;
 }
 
-.me+.me {
+.contact+.contact {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
 }
 
-.me:last-of-type {
+.contact:last-of-type {
     border-bottom-right-radius: 30px;
 }
 
@@ -64,6 +64,10 @@ ul li {
     position: absolute;
     z-index: 1;
     width: 120px;
+}
+
+.left {
+    left: 105%;
 }
 
 .right {

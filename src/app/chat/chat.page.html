@@ -16,16 +16,16 @@
 		<ul>
 			<span *ngFor="let message of messages">
 				<span *ngIf="message.sent">
-					<li [ngClass]="{'me tooltip': message.sent}">
+					<li [ngClass]="{'current-user tooltip': message.sent}">
 						{{message.text}}
 						<span class="tooltiptext right">{{message.timestamp}}</span>
 					</li>
 				</span>
 
 				<span *ngIf="!message.sent">
-					<li [ngClass]="{'him tooltip': !message.sent}">
+					<li [ngClass]="{'contact tooltip': !message.sent}">
 						{{message.text}}
-						<span class="tooltiptext">{{message.timestamp}}</span>
+						<span class="tooltiptext left">{{message.timestamp}}</span>
 					</li>
 				</span>
 			</span>

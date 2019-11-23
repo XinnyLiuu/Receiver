@@ -4,6 +4,7 @@ import { Router } from "@angular/router";
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
 import { DarkModeService } from "../service/dark-mode/dark-mode.service";
+import { Observable, combineLatest } from 'rxjs';
 
 @Component({
 	selector: 'app-messages',
@@ -11,8 +12,7 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 	styleUrls: ['./messages.page.scss'],
 })
 export class MessagesPage implements OnInit {
-	private sent: Array<any>; // List of sent messages
-	private received: Array<any>; // List of received messages
+	private messages: Array<any>;
 	private isDarkMode: boolean;
 	private username: string;
 	private fullName: string;
@@ -26,12 +26,10 @@ export class MessagesPage implements OnInit {
 
 	ngOnInit() {
 		// Get all the messages where the current user is involved
-		this.sent = [];
-		this.received = [];
 		this.username = this.userService.getUsername();
 		this.fullName = this.userService.getFullName();
-		this.getSentMessages();
-		this.getNewMessages();
+		this.messages = [];
+		this.getMessages();
 
 		// Dark Mode
 		this.darkModeService.init();
@@ -39,103 +37,114 @@ export class MessagesPage implements OnInit {
 	}
 
 	/**
-	 * Query firebase for all messages
+	 * Get all the messages that the current user sent
 	 */
 	getSentMessages() {
-		this.messageService.getRef()
-			.where("sender", "==", this.username)
-			.onSnapshot(querySnapshot => {
-				let sent = [];
-				let data = [];
+		return Observable.create(subscriber => {
+			this.messageService.getRef()
+				.where("sender", "==", this.username)
+				.onSnapshot(querySnapshot => {
+					// let sent = [];
+					let data = [];
 
-				// Keep a set of recipients to avoid duplicate conversations
-				let recipients = {};
+					// Gather the documents
+					querySnapshot.forEach(doc => {
+						data.push(doc.data());
+					});
 
-				// Gather the documents
-				querySnapshot.forEach(doc => {
-					data.push(doc.data());
-				});
-
-				// Sort documents 
-				data.sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
-
-				// Go through each document
-				data.forEach(d => {
-					const contact = d.recipient;
-					const message = d.message;
-					const timestamp = d.timestamp;
-
-					if (recipients.hasOwnProperty(contact) && recipients[contact].timestamp < timestamp) {
-						recipients[contact] = {
-							text: message,
-							timestamp: new Date(timestamp).toLocaleString()
-						}
-					} else {
-						recipients[contact] = {
-							contact: contact,
-							text: message,
-							timestamp: new Date(timestamp).toLocaleString()
-						};
-					}
-				});
-
-				// Go through each recipient and add it to the message array
-				Object.keys(recipients).forEach(r => {
-					sent.push(recipients[r]);
+					subscriber.next(data);
 				})
-
-				this.sent = sent;
-			});
+		})
 	}
 
 	/**
-	 * Query firebase for sent messages
+	 * Get all the message that the current user received
 	 */
-	getNewMessages() {
-		this.messageService.getRef()
-			.where("recipient", "==", this.username)
-			.onSnapshot(querySnapshot => {
-				let received = [];
-				let data = [];
+	getReceivedMessages() {
+		return Observable.create(subscriber => {
+			this.messageService.getRef()
+				.where("recipient", "==", this.username)
+				.onSnapshot(querySnapshot => {
+					let data = [];
 
-				// Keep a set of senders to avoid duplicate conversations
-				let senders = {};
+					// Gather the documents
+					querySnapshot.forEach(doc => {
+						data.push(doc.data());
+					});
 
-				// Gather the documents
-				querySnapshot.forEach(doc => {
-					data.push(doc.data());
-				});
+					subscriber.next(data);
+				})
+		});
+	}
 
-				// Sort documents 
-				data.sort((a, b) => a.timestamp > b.timestamp ? 1 : -1);
+	/**
+	 * Combine the messages received and sent to load all messages for the user
+	 */
+	getMessages() {
+		// Combine the two observables and parse the data to create a single latest message for the current user
+		combineLatest(this.getReceivedMessages(), this.getSentMessages(), (received: any[], sent: any[]) => ({ received, sent }))
+			.subscribe(pair => {
+				const received = pair.received;
+				const sent = pair.sent;
 
-				// Go through each document
-				data.forEach(d => {
-					const contact = d.sender;
-					const message = d.message;
-					const timestamp = d.timestamp;
+				// Build a map to keep track of individual contacts and their list of messages
+				const contacts = new Map();
 
-					if (senders.hasOwnProperty(contact) && senders[contact].timestamp < timestamp) {
-						senders[contact] = {
-							text: message,
-							timestamp: new Date(timestamp).toLocaleString()
-						}
+				received.forEach(m => {
+					const contact = m.sender;
+					const message = m.message;
+					const timestamp = m.timestamp;
+
+					if (contacts.get(contact) !== undefined) {
+						contacts.get(contact).push({
+							message: message,
+							timestamp: timestamp,
+							myself: false
+						});
 					} else {
-						senders[contact] = {
-							contact: contact,
-							text: message,
-							timestamp: new Date(timestamp).toLocaleString()
-						};
+						contacts.set(contact, [{
+							message: message,
+							timestamp: timestamp,
+							myself: false
+						}])
 					}
 				});
 
-				// Go through each recipient and add it to the message array
-				Object.keys(senders).forEach(r => {
-					received.push(senders[r]);
-				})
+				sent.forEach(m => {
+					const contact = m.recipient;
+					const message = m.message;
+					const timestamp = m.timestamp;
 
-				this.received = received;
-			});
+					if (contacts.get(contact) !== undefined) {
+						contacts.get(contact).push({
+							message: message,
+							timestamp: timestamp,
+							myself: true
+						});
+					} else {
+						contacts.set(contact, [{
+							message: message,
+							timestamp: timestamp,
+							myself: true
+						}])
+					}
+				});
+
+				// Iterate through each contact in the map to get the latest message
+				let allMessages = [];
+				contacts.forEach((value, key) => {
+					const messages = value;
+					if (messages.length > 0) messages.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1); // Sort the messages in descending order
+
+					// Cleanup the latest message and add it to the allMessages array
+					const latest = messages[0];
+					latest.timestamp = new Date(latest.timestamp).toLocaleString();
+					latest.contact = key;
+					allMessages.push(latest);
+				});
+
+				this.messages = allMessages;
+			})
 	}
 
 	/**

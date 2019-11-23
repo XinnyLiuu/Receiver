@@ -1,13 +1,13 @@
 <ion-header>
 	<ion-toolbar>
-		<ion-title>Messages for {{fullName}}</ion-title>
+		<ion-title>Messages</ion-title>
 		<ion-icon slot="end" name="moon"></ion-icon>
 		<ion-toggle id="themeToggle" slot="end" color="warning" [checked]="isDarkMode"></ion-toggle>
 	</ion-toolbar>
 </ion-header>
 
 <ion-content>
-	<ion-list class="ion-padding" *ngIf="received.length === 0 && sent.length === 0">
+	<ion-list class="ion-padding" *ngIf="messages.length === 0">
 		<ion-item>
 			<ion-title>
 				No messages at this time!
@@ -15,7 +15,24 @@
 		</ion-item>
 	</ion-list>
 
-	<ion-list *ngIf="received.length > 0" class="ion-padding">
+	<ion-list *ngIf="messages.length > 0" class="ion-padding">
+		<ion-list-header>All Conversations</ion-list-header>
+		<ion-item button *ngFor="let message of messages" (click)="openChat(message.contact)">
+			<ion-avatar size="large" slot="start">
+				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+			</ion-avatar>
+			<ion-label>
+				<h2>{{message.contact}}</h2>
+				<h3>
+					<span *ngIf="message.myself">You: </span>
+					{{message.message}}
+				</h3>
+				<p>{{message.timestamp}}</p>
+			</ion-label>
+		</ion-item>
+	</ion-list>
+
+	<!-- <ion-list *ngIf="received.length > 0" class="ion-padding">
 		<ion-list-header>Received</ion-list-header>
 		<ion-item button *ngFor="let message of received" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
@@ -27,9 +44,9 @@
 				<p>{{message.timestamp}}</p>
 			</ion-label>
 		</ion-item>
-	</ion-list>
+	</ion-list> -->
 
-	<ion-list *ngIf="sent.length > 0" class="ion-padding">
+	<!-- <ion-list *ngIf="sent.length > 0" class="ion-padding">
 		<ion-list-header>Sent</ion-list-header>
 		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
@@ -41,7 +58,7 @@
 				<p>{{message.timestamp}}</p>
 			</ion-label>
 		</ion-item>
-	</ion-list>
+	</ion-list> -->
 
 	<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
 		<ion-fab-button color="warning">

@@ -56,6 +56,9 @@ export class ChatPage implements OnInit {
 		this.error = false;
 	}
 
+	/**
+	 * Gets the messages for the current chat
+	 */
 	getChat() {
 		const username = this.userService.getUsername();
 		this.messageService.getRef()
