@@ -7,7 +7,15 @@
 </ion-header>
 
 <ion-content>
-	<ion-list class="ion-padding">
+	<ion-list class="ion-padding" *ngIf="received.length === 0 && sent.length === 0">
+		<ion-item>
+			<ion-title>
+				No messages at this time!
+			</ion-title>
+		</ion-item>
+	</ion-list>
+
+	<ion-list *ngIf="received.length > 0" class="ion-padding">
 		<ion-list-header>Received</ion-list-header>
 		<ion-item button *ngFor="let message of received" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
@@ -21,7 +29,7 @@
 		</ion-item>
 	</ion-list>
 
-	<ion-list class="ion-padding">
+	<ion-list *ngIf="sent.length > 0" class="ion-padding">
 		<ion-list-header>Sent</ion-list-header>
 		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
@@ -48,6 +56,9 @@
 			</ion-fab-button>
 			<ion-fab-button color="light ">
 				<ion-icon name="settings"></ion-icon>
+			</ion-fab-button>
+			<ion-fab-button color="light ">
+				<ion-icon name="add"></ion-icon>
 			</ion-fab-button>
 		</ion-fab-list>
 	</ion-fab>

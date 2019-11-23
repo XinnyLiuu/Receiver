@@ -45,8 +45,21 @@ export class ChatPage implements OnInit {
 
 		// Get all messages the current user has with the contact
 		this.messages = [];
-		const username = this.userService.username;
-		this.messageService.getRef().where("sender", "in", [username, this.contact]) // Firebase query
+		this.getChat();
+
+		// Prepare the messaging form
+		this.messageForm = this.formBuilder.group({
+			message: ""
+		});
+
+		// Default error to false
+		this.error = false;
+	}
+
+	getChat() {
+		const username = this.userService.getUsername();
+		this.messageService.getRef()
+			.where("sender", "in", [username, this.contact]) // Firebase query
 			.onSnapshot(querySnapshot => {
 				let allMessages = [];
 				let sent = [];
@@ -81,14 +94,6 @@ export class ChatPage implements OnInit {
 				// Scroll to the bottom after messages are generated
 				this.content.scrollToBottom();
 			});
-
-		// Prepare the messaging form
-		this.messageForm = this.formBuilder.group({
-			message: ""
-		});
-
-		// Default error to false
-		this.error = false;
 	}
 
 	/**
@@ -99,7 +104,7 @@ export class ChatPage implements OnInit {
 	async sendMessage(messageData) {
 		try {
 			let { message } = messageData; // TODO: encryption of message
-			const username = this.userService.username;
+			const username = this.userService.getUsername();
 
 			const success = await this.messageService.createMessage(username, this.contact, message);
 

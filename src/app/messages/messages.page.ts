@@ -27,6 +27,7 @@ export class MessagesPage implements OnInit {
 	ngOnInit() {
 		// Get all the messages where the current user is involved
 		this.sent = [];
+		this.received = [];
 		this.username = this.userService.getUsername();
 		this.fullName = this.userService.getFullName();
 		this.getSentMessages();
@@ -97,8 +98,8 @@ export class MessagesPage implements OnInit {
 				let received = [];
 				let data = [];
 
-				// Keep a set of recipients to avoid duplicate conversations
-				let recipients = {};
+				// Keep a set of senders to avoid duplicate conversations
+				let senders = {};
 
 				// Gather the documents
 				querySnapshot.forEach(doc => {
@@ -110,17 +111,17 @@ export class MessagesPage implements OnInit {
 
 				// Go through each document
 				data.forEach(d => {
-					const contact = d.recipient;
+					const contact = d.sender;
 					const message = d.message;
 					const timestamp = d.timestamp;
 
-					if (recipients.hasOwnProperty(contact) && recipients[contact].timestamp < timestamp) {
-						recipients[contact] = {
+					if (senders.hasOwnProperty(contact) && senders[contact].timestamp < timestamp) {
+						senders[contact] = {
 							text: message,
 							timestamp: new Date(timestamp).toLocaleString()
 						}
 					} else {
-						recipients[contact] = {
+						senders[contact] = {
 							contact: contact,
 							text: message,
 							timestamp: new Date(timestamp).toLocaleString()
@@ -129,8 +130,8 @@ export class MessagesPage implements OnInit {
 				});
 
 				// Go through each recipient and add it to the message array
-				Object.keys(recipients).forEach(r => {
-					received.push(recipients[r]);
+				Object.keys(senders).forEach(r => {
+					received.push(senders[r]);
 				})
 
 				this.received = received;
