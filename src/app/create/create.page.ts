@@ -34,6 +34,7 @@ export class CreatePage implements OnInit {
 	async getUsers() {
 		try {
 			this.users = await this.userService.getAllUsers();
+			// this.users = this.users.filter(user => { return user.username !== this.userService.getUsername()});
 		} catch (err) {
 			this.error = true;
 		}
