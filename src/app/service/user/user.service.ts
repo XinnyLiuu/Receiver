@@ -250,8 +250,25 @@ export class UserService {
 		try {
 			const doc = await this.ref.doc(username).get();
 			const icon = doc.data().icon;
+			const src = `data:image/svg+xml;base64,${window.btoa(icon)}`;
 
-			return icon;
+			return src;
+		} catch (err) {
+			throw new Error(err);
+		}
+	}
+
+	/**
+	 * Gets the user's fullname
+	 * 
+	 * @param username 
+	 */
+	async getUserFullName(username: string) {
+		try {
+			const doc = await this.ref.doc(username).get();
+			const fullname = `${doc.data().fname} ${doc.data().lname}`;
+
+			return fullname;
 		} catch (err) {
 			throw new Error(err);
 		}

@@ -12,12 +12,12 @@
 </ion-toolbar>
 
 <ion-content class="ion-padding">
-	<ion-searchbar animated placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="filterUsers()"></ion-searchbar>
+	<ion-searchbar animated placeholder="Search for a name or username" [(ngModel)]="searchTerm"
+		(ionChange)="filterUsers()"></ion-searchbar>
 	<ion-list>
 		<ion-item *ngFor="let user of users" (click)="openChat(user.username)">
 			<ion-text>
-				{{user.fullname}}
-				<ion-text color="warning"> ({{user.username}})</ion-text>
+				{{user.username}}
 			</ion-text>
 		</ion-item>
 	</ion-list>

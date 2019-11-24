@@ -20,6 +20,8 @@ import { ModalComponent } from '../modal/modal.component';
 export class ChatPage implements OnInit {
 	private messageForm: FormGroup;
 	private contact: string;
+	private fullname: string;
+	private src: string;
 	private messages: Array<any>;
 	private prevLength: number; // Stores the previous length of messages to track new messages
 	private error: boolean;
@@ -51,13 +53,22 @@ export class ChatPage implements OnInit {
 
 				// Check if the user exists
 				const exists = await this.userService.isUserExists(contact);
-				if (!exists) return this.router.navigate(["/messages"]);
+				if (!exists) {
+					this.error = true;
+					this.errorMessage = "Error with loading the chat!";
+					return this.router.navigate(["/messages"]);
+				}
 			} catch (err) {
 				this.error = true;
 				this.errorMessage = "Error with loading the chat!";
-				// return this.router.navigate(["/messages"]);
+				return this.router.navigate(["/messages"]);
 			}
 		});
+
+		// Add the full name and icon of the contact
+		this.fullname = "";
+		this.src = "";
+		this.getContactInfo();
 
 		// Get all messages the current user has with the contact
 		this.messages = [];
@@ -75,6 +86,18 @@ export class ChatPage implements OnInit {
 		// Default error to false
 		this.error = false;
 		this.errorMessage = "An error has occurred!";
+	}
+
+	/**
+	 * Gets the full name of the contact
+	 */
+	async getContactInfo() {
+		try {
+			this.fullname = await this.userService.getUserFullName(this.contact);
+		} catch (err) {
+			this.error = true;
+			this.errorMessage = "Error with loading the chat!";
+		}
 	}
 
 	/**

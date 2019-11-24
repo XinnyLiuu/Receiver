@@ -52,7 +52,6 @@ export class MessagesPage implements OnInit {
 			this.messageService.getRef()
 				.where("sender", "==", this.username)
 				.onSnapshot(querySnapshot => {
-					// let sent = [];
 					let data = [];
 
 					// Gather the documents
@@ -145,21 +144,27 @@ export class MessagesPage implements OnInit {
 				let allMessages = [];
 				contacts.forEach(async (value, key) => {
 					const messages = value;
-					if (messages.length > 0) messages.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1); // Sort the messages in descending order
+
+					// Sort the messages in descending order
+					if (messages.length > 0) messages.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1);
 
 					// Cleanup the latest message and add it to the allMessages array
 					const latest = messages[0];
 					latest.timestamp = new Date(latest.timestamp).toLocaleString();
 					latest.contact = key;
 
+					// Prepare the latest message with the user's icon and fullname
 					try {
 						// Get the svg string and convert it to base64 to load into the DOM as an image src
-						const svg = await this.userService.getUserIcon(key);
-						const src = `data:image/svg+xml;base64,${window.btoa(svg)}`;
+						const src = await this.userService.getUserIcon(key);
 						latest.icon = src;
+
+						// Get the full name
+						const fullname = await this.userService.getUserFullName(key);
+						latest.fullname = fullname;
 					} catch (err) {
 						this.error = true;
-						this.errorMessage = "Error with loading profile icons!";
+						this.errorMessage = "Error with getting conversations!";
 					}
 
 					allMessages.push(latest);

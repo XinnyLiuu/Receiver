@@ -26,7 +26,7 @@
 				<img [src]="domSanitizer.bypassSecurityTrustResourceUrl(message.icon)">
 			</ion-avatar>
 			<ion-label>
-				<h2>{{message.contact}}</h2>
+				<h2>{{message.fullname}} ({{message.contact}})</h2>
 				<h3>
 					<span *ngIf="message.myself">You: </span>
 					{{message.message}}
