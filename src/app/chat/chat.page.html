@@ -16,14 +16,14 @@
 		<ul>
 			<span *ngFor="let message of messages">
 				<span *ngIf="message.sent">
-					<li [ngClass]="{'current-user tooltip': message.sent}">
+					<li [ngClass]="{'current-user speech tooltip': message.sent}">
 						{{message.text}}
 						<span class="tooltiptext right">{{message.timestamp}}</span>
 					</li>
 				</span>
 
 				<span *ngIf="!message.sent">
-					<li [ngClass]="{'contact tooltip': !message.sent}">
+					<li [ngClass]="{'contact speech tooltip': !message.sent}">
 						{{message.text}}
 						<span class="tooltiptext left">{{message.timestamp}}</span>
 					</li>
@@ -38,7 +38,11 @@
 		<ion-item lines="inset" class="ion-padding">
 			<ion-textarea required type="text" name="message" formControlName="message" color="dark"
 				placeholder="Send a message"></ion-textarea>
-			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning">Send</ion-button>
+			<!-- <ion-button color="light" slot="end" (click)="showPlugins()"> -->
+			<ion-icon name="apps" size="medium" slot="end" (click)="showPlugins()"></ion-icon>
+			<!-- </ion-button> -->
+			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning" size="small">Send
+			</ion-button>
 		</ion-item>
 	</form>
 </ion-footer>

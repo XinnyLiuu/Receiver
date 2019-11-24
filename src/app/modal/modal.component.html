@@ -1,0 +1,38 @@
+<ion-header no-border>
+	<ion-toolbar>
+		<ion-title>Translate</ion-title>
+		<ion-buttons slot="end">
+			<ion-button (click)="dismiss('close')">Close</ion-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-toolbar [hidden]="!error" color="danger">
+	<ion-title>{{errorMessage}}</ion-title>
+</ion-toolbar>
+
+<ion-content>
+	<ion-list>
+		<ion-item>
+			<ion-label position="stacked">Text
+				<ion-text color="danger"> *</ion-text>
+			</ion-label>
+			<ion-input id="input" required type="text" placeholder="Enter the text you want to translate">
+			</ion-input>
+		</ion-item>
+
+		<ion-item>
+			<ion-label position="stacked">Target Language
+				<ion-text color="danger"> *</ion-text>
+			</ion-label>
+			<ion-select id="select" required placeholder="Select the language to translate the text">
+				<ion-select-option *ngFor="let language of languages" [value]="language.alpha2">
+					{{ language.English }}
+				</ion-select-option>
+			</ion-select>
+		</ion-item>
+
+		<ion-button color="warning" expand="block" (click)="dismiss('Get Data')">Submit
+		</ion-button>
+	</ion-list>
+</ion-content>

@@ -10,15 +10,21 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { AuthGuardService } from "./service/auth-guard/auth-guard.service";
-import { RoleGuardService } from "./service/role-guard/role-guard.service"; 
+import { RoleGuardService } from "./service/role-guard/role-guard.service";
+import { ModalComponent } from './modal/modal.component';
 
 @NgModule({
-	declarations: [AppComponent],
-	entryComponents: [],
+	declarations: [
+		AppComponent,
+		ModalComponent
+	],
+	entryComponents: [
+		ModalComponent
+	],
 	imports: [
 		BrowserModule,
 		IonicModule.forRoot(),
-		AppRoutingModule
+		AppRoutingModule,
 	],
 	providers: [
 		StatusBar,

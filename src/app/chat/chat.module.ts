@@ -9,13 +9,13 @@ import { ChatPageRoutingModule } from './chat-routing.module';
 import { ChatPage } from './chat.page';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    IonicModule,
-    ChatPageRoutingModule
-  ],
-  declarations: [ChatPage]
+	imports: [
+		CommonModule,
+		FormsModule,
+		ReactiveFormsModule,
+		IonicModule,
+		ChatPageRoutingModule
+	],
+	declarations: [ChatPage]
 })
 export class ChatPageModule { }
