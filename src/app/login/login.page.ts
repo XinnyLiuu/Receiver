@@ -14,11 +14,11 @@ import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 export class LoginPage implements OnInit {
 	private loginForm: FormGroup;
 	private error: boolean;
+	private errorMessage: string;
 	private isDarkMode: boolean;
 
 	constructor(
 		private darkModeService: DarkModeService,
-		private cryptoService: CryptoService,
 		private userService: UserService,
 		private formBuilder: FormBuilder,
 		private router: Router) {
@@ -37,6 +37,7 @@ export class LoginPage implements OnInit {
 
 		// Default error to false
 		this.error = false;
+		this.errorMessage = "An error has occured!";
 	}
 
 	/**
@@ -49,32 +50,22 @@ export class LoginPage implements OnInit {
 			// Grab values
 			let { username, password } = userData;
 			username = username.trim().toLowerCase();
+			userData.username = username;
 
-			// Check if user exists
-			const exists = await this.userService.isUserExists(username);
+			// Login the user
+			const loggedIn = await this.userService.loginUser(userData);
 
-			// If the user exists, prepare their data in userService and redirect them to the messages component
-			if (exists) {
-				// Get the user's salt 
-				const salt = await this.userService.getUserSalt(username);
-
-				// Hash the password
-				password = this.cryptoService.hash(password, salt);
-
-				// Get the user's data
-				const data = await this.userService.getUserByUsernamePassword(username, password);
-
-				// Prepare the user's session
-				this.userService.prepareUser(data.fname, data.lname, data.username);
-
+			if (loggedIn) {
 				// Navigate to /messages and force a reload there for firebase to fetch the required documents
 				return this.router.navigate(["/messages"])
 					.then(() => window.location.reload());
 			}
 
 			this.error = true;
+			this.errorMessage = "Could not login the user at this time. Please try again later!";
 		} catch (err) {
 			this.error = true;
+			this.errorMessage = "Could not login the user at this time. Please try again later!";
 		}
 	}
 

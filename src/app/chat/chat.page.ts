@@ -1,8 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { IonContent, ActionSheetController, ModalController, AlertController } from "@ionic/angular";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
+import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
+import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
@@ -18,10 +21,13 @@ export class ChatPage implements OnInit {
 	private messageForm: FormGroup;
 	private contact: string;
 	private messages: Array<any>;
+	private prevLength: number; // Stores the previous length of messages to track new messages
 	private error: boolean;
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
+		private localNotifications: LocalNotifications,
+		private camera: Camera,
 		private geolocation: Geolocation,
 		private alertController: AlertController,
 		private modalController: ModalController,
@@ -53,6 +59,7 @@ export class ChatPage implements OnInit {
 
 		// Get all messages the current user has with the contact
 		this.messages = [];
+		this.prevLength = 0;
 		this.getChat();
 
 		// Prepare the messaging form
@@ -79,6 +86,7 @@ export class ChatPage implements OnInit {
 				let sent = [];
 				let received = [];
 
+				// Get the data from the query snapshot and filter
 				querySnapshot.forEach(doc => {
 					if (doc.data().sender === username && doc.data().recipient === this.contact) {
 						sent.push({
@@ -104,13 +112,25 @@ export class ChatPage implements OnInit {
 				sent.forEach(m => allMessages.push(m));
 				received.forEach(m => allMessages.push(m));
 
+				// Sort the messages in first come first serve
 				allMessages.sort((a, b) => a.timestamp >= b.timestamp ? 1 : -1);
+
+				// Check the previous length of this.messages
 				this.messages = allMessages;
+				if (this.prevLength < this.messages.length) {
+					this.prevLength = this.messages.length;
+
+					// Send out a new notification
+					this.localNotifications.schedule({
+						title: `New Message from ${this.contact}`,
+						text: `${allMessages[allMessages.length-1].text}`
+					});
+				}
 
 				// Scroll to the bottom after messages are generated
 				setTimeout(() => {
 					this.content.scrollToBottom();
-				}, 100)
+				});
 			});
 	}
 
@@ -249,6 +269,29 @@ export class ChatPage implements OnInit {
 									this.messageForm.setValue({
 										message: address
 									})
+								})
+						} catch (err) {
+							this.error = true;
+						}
+					}
+				},
+				{
+					text: "Camera",
+					icon: 'camera',
+					handler: () => {
+						try {
+							// Setup camera config for cordova plugin
+							const opts: CameraOptions = {
+								quality: 25,
+								destinationType: this.camera.DestinationType.FILE_URI,
+								encodingType: this.camera.EncodingType.JPEG,
+								mediaType: this.camera.MediaType.PICTURE
+							};
+
+							// Take the picture
+							this.camera.getPicture(opts)
+								.then(resp => {
+									console.log(resp);
 								})
 						} catch (err) {
 							this.error = true;

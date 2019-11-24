@@ -7,7 +7,7 @@
 </ion-header>
 
 <ion-toolbar [hidden]="!error" color="danger">
-	<ion-title>An error has occured!</ion-title>
+	<ion-title>{{errorMessage}}</ion-title>
 </ion-toolbar>
 
 <ion-content class="ion-padding">
@@ -41,7 +41,8 @@
 				<ion-input required type="password" name="password" formControlName="password"></ion-input>
 			</ion-item>
 
-			<ion-button [disabled]="!registerForm.valid" color="warning" type="submit" expand="block">Register</ion-button>
+			<ion-button [disabled]="!registerForm.valid" color="warning" type="submit" expand="block">Register
+			</ion-button>
 
 			<ion-button (click)="toLogin()" color="light" expand="block">Already have an account? Login</ion-button>
 		</ion-list>

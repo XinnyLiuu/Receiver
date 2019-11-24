@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 
 import { UserService } from "../service/user/user.service";
-import { CryptoService } from "../service/crypto/crypto.service";
 import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 
 @Component({
@@ -14,11 +13,11 @@ import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 export class RegisterPage implements OnInit {
 	private registerForm: FormGroup;
 	private error: boolean;
+	private errorMessage: string;
 	private isDarkMode: boolean;
 
 	constructor(
 		private darkModeService: DarkModeService,
-		private cryptoService: CryptoService,
 		private userService: UserService,
 		private formBuilder: FormBuilder,
 		private router: Router) {
@@ -39,6 +38,7 @@ export class RegisterPage implements OnInit {
 
 		// Default error to false
 		this.error = false;
+		this.errorMessage = "An error has occured!";
 	}
 
 	/**
@@ -48,43 +48,20 @@ export class RegisterPage implements OnInit {
 	 */
 	async register(userData) {
 		try {
-			// Grab values
-			let { fname, lname, username, password } = userData;
+			// Pass the data to user service to handle registering the user
+			const added = await this.userService.addUser(userData);
 
-			// Capitalize first + last name
-			fname.charAt(0).toUpperCase();
-			lname.charAt(0).toUpperCase();
-
-			const exists = await this.userService.isUserExists(username.trim().toLowerCase());
-
-			// If the user does not exist then add the user to db
-			if (!exists) {
-				// Hash the password
-				const salt = this.cryptoService.getSalt();
-				password = this.cryptoService.hash(password, salt);
-
-				// Setup user
-				userData.username = username.trim().toLowerCase();
-				userData.fname = fname.trim();
-				userData.lname = lname.trim();
-				userData.salt = salt;
-				userData.password = password;
-
-				const added = await this.userService.addUser(userData);
-
-				if (added) {
-					// Set user data 
-					this.userService.prepareUser(userData.fname, userData.lname, userData.username);
-
-					// Navigate to /messages and force a reload there for firebase to fetch the required documents
-					return this.router.navigate(["/messages"])
-						.then(() => window.location.reload());
-				}
+			if (added) {
+				// Navigate to /messages and force a reload there for firebase to fetch the required documents
+				return this.router.navigate(["/messages"])
+					.then(() => window.location.reload());
 			}
 
 			this.error = true;
+			this.errorMessage = "There was an error registering the user. Please try again!";
 		} catch (err) {
 			this.error = true;
+			this.errorMessage = "There was an error registering the user. Please try again!";
 		}
 	}
 

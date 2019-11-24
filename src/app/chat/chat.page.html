@@ -39,7 +39,7 @@
 	<form [formGroup]="messageForm" (ngSubmit)="sendMessage(messageForm.value)">
 		<ion-item lines="inset">
 			<ion-textarea required type="text" name="message" formControlName="message" color="dark"
-				placeholder="Send a message"></ion-textarea>
+				placeholder="Send a message" autoGrow="true"></ion-textarea>
 			<ion-icon name="apps" size="medium" slot="end" (click)="showPlugins()"></ion-icon>
 			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning" size="small">Send
 			</ion-button>

@@ -170,4 +170,11 @@ export class MessagesPage implements OnInit {
 	toCreate() {
 		return this.router.navigate(['/create']);
 	}
+
+	/**
+	 * Redirects the user to the settings page 
+	 */
+	toSettings() {
+		return this.router.navigate(['/settings']);
+	}
 }
