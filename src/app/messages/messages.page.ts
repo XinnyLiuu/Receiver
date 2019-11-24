@@ -161,6 +161,13 @@ export class MessagesPage implements OnInit {
 	 */
 	doLogout() {
 		this.userService.logout();
-		window.location.reload();
+		return window.location.reload();
+	}
+
+	/**
+	 * Redirects the user to create a new chat
+	 */
+	toCreate() {
+		return this.router.navigate(['/create']);
 	}
 }

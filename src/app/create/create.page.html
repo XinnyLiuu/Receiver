@@ -1,0 +1,24 @@
+<ion-header no-border>
+	<ion-toolbar>
+		<ion-title>Start a Conversation</ion-title>
+		<ion-buttons slot="start">
+			<ion-back-button></ion-back-button>
+		</ion-buttons>
+	</ion-toolbar>
+</ion-header>
+
+<ion-toolbar [hidden]="!error" color="danger">
+	<ion-title>An error has occured!</ion-title>
+</ion-toolbar>
+
+<ion-content class="ion-padding">
+	<ion-searchbar animated placeholder="Search" [(ngModel)]="searchTerm" (ionChange)="filterUsers()"></ion-searchbar>
+	<ion-list>
+		<ion-item *ngFor="let user of users" (click)="openChat(user.username)">
+			<ion-text>
+				{{user.fullname}}
+				<ion-text color="warning"> ({{user.username}})</ion-text>
+			</ion-text>
+		</ion-item>
+	</ion-list>
+</ion-content>

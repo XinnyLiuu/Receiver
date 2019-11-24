@@ -13,12 +13,15 @@ export class UserService {
 	private fullName: string;
 
 	constructor(private firebaseService: FirebaseService) {
+		// Firestore references
 		this.db = this.firebaseService.db;
 		this.ref = this.db.collection("users");
 
+		// Set auth
 		if (localStorage.getItem("isAuth") === null) this.isAuthenticated = false;
 		else this.isAuthenticated = true;
 
+		// Set current user's info
 		this.username = localStorage.getItem("username");
 		this.fullName = localStorage.getItem("fullName");
 	}
@@ -143,5 +146,26 @@ export class UserService {
 	 */
 	logout() {
 		localStorage.clear();
+	}
+
+	/**
+	 * Gets the list of all users in the application
+	 */
+	async getAllUsers() {
+		try {
+			const snapshot = await this.ref.get();
+
+			let users = [];
+			snapshot.forEach(doc => {
+				users.push({
+					username: doc.data().username,
+					fullname: `${doc.data().fname} ${doc.data().lname}` 
+				});
+			})
+
+			return users;
+		} catch(err) {
+			throw new Error(err);
+		}
 	}
 }

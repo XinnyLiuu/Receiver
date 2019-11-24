@@ -32,34 +32,6 @@
 		</ion-item>
 	</ion-list>
 
-	<!-- <ion-list *ngIf="received.length > 0" class="ion-padding">
-		<ion-list-header>Received</ion-list-header>
-		<ion-item button *ngFor="let message of received" (click)="openChat(message.contact)">
-			<ion-avatar size="large" slot="start">
-				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
-			</ion-avatar>
-			<ion-label>
-				<h2>{{message.contact}}</h2>
-				<h3>{{message.text}}</h3>
-				<p>{{message.timestamp}}</p>
-			</ion-label>
-		</ion-item>
-	</ion-list> -->
-
-	<!-- <ion-list *ngIf="sent.length > 0" class="ion-padding">
-		<ion-list-header>Sent</ion-list-header>
-		<ion-item button *ngFor="let message of sent" (click)="openChat(message.contact)">
-			<ion-avatar size="large" slot="start">
-				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
-			</ion-avatar>
-			<ion-label>
-				<h2>{{message.contact}}</h2>
-				<h3>{{message.text}}</h3>
-				<p>{{message.timestamp}}</p>
-			</ion-label>
-		</ion-item>
-	</ion-list> -->
-
 	<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>
 		<ion-fab-button color="warning">
 			<ion-icon name="menu"></ion-icon>
@@ -71,10 +43,10 @@
 			<ion-fab-button color="light">
 				<ion-icon name="contacts"></ion-icon>
 			</ion-fab-button>
-			<ion-fab-button color="light ">
+			<ion-fab-button color="light">
 				<ion-icon name="settings"></ion-icon>
 			</ion-fab-button>
-			<ion-fab-button color="light ">
+			<ion-fab-button color="light" (click)="toCreate()">
 				<ion-icon name="add"></ion-icon>
 			</ion-fab-button>
 		</ion-fab-list>
