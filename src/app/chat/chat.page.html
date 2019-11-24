@@ -11,20 +11,22 @@
 	<ion-title>An error has occured!</ion-title>
 </ion-toolbar>
 
-<ion-content>
+<ion-content fullscreen>
 	<ion-list class="ion-padding" #content>
 		<ul>
 			<span *ngFor="let message of messages">
 				<span *ngIf="message.sent">
 					<li [ngClass]="{'current-user speech tooltip': message.sent}">
-						{{message.text}}
+						<img *ngIf="message.giphy" [src]="message.text">
+						<ion-text *ngIf="!message.giphy">{{message.text}}</ion-text>
 						<span class="tooltiptext right">{{message.timestamp}}</span>
 					</li>
 				</span>
 
 				<span *ngIf="!message.sent">
 					<li [ngClass]="{'contact speech tooltip': !message.sent}">
-						{{message.text}}
+						<img *ngIf="message.giphy" [src]="message.text">
+						<ion-text *ngIf="!message.giphy">{{message.text}}</ion-text>
 						<span class="tooltiptext left">{{message.timestamp}}</span>
 					</li>
 				</span>
@@ -35,12 +37,10 @@
 
 <ion-footer>
 	<form [formGroup]="messageForm" (ngSubmit)="sendMessage(messageForm.value)">
-		<ion-item lines="inset" class="ion-padding">
+		<ion-item lines="inset">
 			<ion-textarea required type="text" name="message" formControlName="message" color="dark"
 				placeholder="Send a message"></ion-textarea>
-			<!-- <ion-button color="light" slot="end" (click)="showPlugins()"> -->
 			<ion-icon name="apps" size="medium" slot="end" (click)="showPlugins()"></ion-icon>
-			<!-- </ion-button> -->
 			<ion-button [disabled]="!messageForm.valid" type="submit" slot="end" color="warning" size="small">Send
 			</ion-button>
 		</ion-item>

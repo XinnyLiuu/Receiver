@@ -29,12 +29,19 @@ export class MessagesService {
 	 */
 	async createMessage(sender: string, recipient: string, message: string): Promise<boolean> {
 		try {
-			await this.ref.add({
+			// Prepare message object
+			let messageObj = {
 				sender: sender,
 				recipient: recipient,
 				message: message, // TODO: Encrypt
-				timestamp: Date.parse(new Date().toLocaleString())
-			});
+				timestamp: Date.parse(new Date().toLocaleString()),
+				giphy: false
+			}
+
+			// Check if the message is a giphy url
+			if (message.includes("https://") && message.includes("giphy") && message.includes("media")) messageObj["giphy"] = true;
+
+			await this.ref.add(messageObj);
 
 			return true;
 		} catch (err) {

@@ -7,6 +7,7 @@ import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
 import { PluginService } from '../service/plugin/plugin.service';
 import { ModalComponent } from '../modal/modal.component';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
 	selector: 'app-chat',
@@ -21,6 +22,7 @@ export class ChatPage implements OnInit {
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
+		private domSanitizer: DomSanitizer,
 		private modalController: ModalController,
 		private pluginService: PluginService,
 		private actionSheetController: ActionSheetController,
@@ -82,7 +84,8 @@ export class ChatPage implements OnInit {
 							sender: doc.data().sender,
 							text: doc.data().message,
 							timestamp: new Date(doc.data().timestamp).toLocaleString(),
-							sent: true
+							sent: true,
+							giphy: doc.data().giphy
 						})
 					}
 
@@ -91,7 +94,8 @@ export class ChatPage implements OnInit {
 							sender: doc.data().sender,
 							text: doc.data().message,
 							timestamp: new Date(doc.data().timestamp).toLocaleString(),
-							sent: false
+							sent: false,
+							giphy: doc.data().giphy
 						})
 					}
 				});
@@ -138,71 +142,79 @@ export class ChatPage implements OnInit {
 		try {
 			const actionSheet = await this.actionSheetController.create({
 				header: 'Plugins',
-				buttons: [
-					{
-						text: 'GIPHY',
-						icon: 'aperture',
-						handler: () => {
-							alert("Giphy!");
-						}
-					},
-					{
-						text: "Dad Jokes",
-						icon: 'happy',
-						handler: async () => {
-							try {
-								// Get dad joke
-								const joke = await this.pluginService.getDadJoke();
+				buttons: [{
+					text: 'GIPHY',
+					icon: 'aperture',
+					handler: async () => {
+						try {
+							// Get random GIF based on search term
+							const gif = await this.pluginService.getGIF("boobies");
 
-								// Append the joke to the textarea
-								this.messageForm.setValue({
-									message: joke
-								});
-							} catch (err) {
-								this.error = true;
-							}
-						}
-					},
-					{
-						text: "Translate",
-						icon: 'book',
-						handler: async () => {
-							// Open up a modal for the user to fill out to translate a desired text of their choice
-							try {
-								const modal = await this.modalController.create({
-									component: ModalComponent
-								});
-
-								// Get the data from the modal
-								modal.onDidDismiss()
-									.then(async d => {
-										const data = d.data;
-										const lang = data.lang;
-										const text = data.text;
-
-										// Translate
-										const translatedText = await this.pluginService.getTranslate(text, lang);
-
-										// Append to form
-										this.messageForm.setValue({
-											message: translatedText
-										});
-									});
-
-								return await modal.present();
-							} catch (err) {
-								this.error = true;
-							}
-						}
-					},
-					{
-						text: 'Share Location',
-						icon: 'pin',
-						handler: () => {
-							alert("Location")
+							// Append link to textarea
+							this.messageForm.setValue({
+								message: gif
+							});
+						} catch (err) {
+							this.error = true;
 						}
 					}
-				]
+				},
+				{
+					text: "Dad Jokes",
+					icon: 'happy',
+					handler: async () => {
+						try {
+							// Get dad joke
+							const joke = await this.pluginService.getDadJoke();
+
+							// Append the joke to the textarea
+							this.messageForm.setValue({
+								message: joke
+							});
+						} catch (err) {
+							this.error = true;
+						}
+					}
+				},
+				{
+					text: "Translate",
+					icon: 'book',
+					handler: async () => {
+						try {
+							// Open up a modal for the user to fill out to translate a desired text of their choice
+							const modal = await this.modalController.create({
+								component: ModalComponent
+							});
+
+							// Get the data from the modal
+							modal.onDidDismiss()
+								.then(async d => {
+									const data = d.data;
+									const lang = data.lang;
+									const text = data.text;
+
+									// Translate
+									const translatedText = await this.pluginService.getTranslate(text, lang);
+
+									// Append to form
+									this.messageForm.setValue({
+										message: translatedText
+									});
+								});
+
+							return await modal.present();
+						} catch (err) {
+							this.error = true;
+						}
+					}
+				},
+				{
+					text: 'Share Location',
+					icon: 'pin',
+					handler: () => {
+						alert("Location")
+					}
+				}]
 			});
 
 			return await actionSheet.present();

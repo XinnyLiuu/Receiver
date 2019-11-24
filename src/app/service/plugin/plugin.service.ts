@@ -4,13 +4,17 @@ import { Injectable } from '@angular/core';
 	providedIn: 'root'
 })
 export class PluginService {
-	private GOOGLE_API_KEY = "AIzaSyDr92cSqmmHncSueLdBAMVecPFuhdDUaAQ";
+	private GIPHY_API_KEY: string = "HHY7c61ffqupiFH4YK28NAcCey6FABK1";
+	private GOOGLE_API_KEY: string = "AIzaSyDr92cSqmmHncSueLdBAMVecPFuhdDUaAQ";
+
 	private dadJokeAPI: string;
-	private translateAPI: any;
+	private translateAPI: string;
+	private giphyAPI: string;
 
 	constructor() {
 		this.dadJokeAPI = "https://icanhazdadjoke.com/";
 		this.translateAPI = `https://translation.googleapis.com/language/translate/v2?key=${this.GOOGLE_API_KEY}`;
+		this.giphyAPI = `https://api.giphy.com/v1/gifs/random?api_key=${this.GIPHY_API_KEY}`;
 	}
 
 	/**
@@ -59,6 +63,26 @@ export class PluginService {
 			if (resp.status === 200) {
 				const json = await resp.json();
 				return json.data.translations[0].translatedText;
+			}
+		} catch (err) {
+			throw new Error(err);
+		}
+	}
+
+	/**
+	 * Sends a GET request to fetch a random GIF related to the tag inputted
+	 * 
+	 * @param tag 
+	 */
+	async getGIF(tag: string) {
+		try {
+			const resp = await fetch(`${this.giphyAPI}&tag=${tag}&rating=R`, {
+				method: "GET"
+			});
+
+			if (resp.status === 200) {
+				const json = await resp.json();
+				return json.data.images.fixed_height_small.url; // Return the URL of the gif
 			}
 		} catch (err) {
 			throw new Error(err);
