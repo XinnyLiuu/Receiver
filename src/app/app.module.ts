@@ -5,13 +5,14 @@ import { RouteReuseStrategy } from '@angular/router';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
+import { ModalComponent } from './modal/modal.component';
 
 import { AuthGuardService } from "./service/auth-guard/auth-guard.service";
 import { RoleGuardService } from "./service/role-guard/role-guard.service";
-import { ModalComponent } from './modal/modal.component';
 
 @NgModule({
 	declarations: [
@@ -31,7 +32,8 @@ import { ModalComponent } from './modal/modal.component';
 		SplashScreen,
 		{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
 		AuthGuardService,
-		RoleGuardService
+		RoleGuardService,
+		Geolocation
 	],
 	bootstrap: [AppComponent]
 })

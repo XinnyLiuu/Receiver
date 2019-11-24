@@ -10,11 +10,13 @@ export class PluginService {
 	private dadJokeAPI: string;
 	private translateAPI: string;
 	private giphyAPI: string;
+	private geocodingAPI: string;
 
 	constructor() {
 		this.dadJokeAPI = "https://icanhazdadjoke.com/";
 		this.translateAPI = `https://translation.googleapis.com/language/translate/v2?key=${this.GOOGLE_API_KEY}`;
-		this.giphyAPI = `https://api.giphy.com/v1/gifs/random?api_key=${this.GIPHY_API_KEY}`;
+		this.giphyAPI = `https://api.giphy.com/v1/gifs/random?api_key=${this.GIPHY_API_KEY}`; 
+		this.geocodingAPI = `https://maps.googleapis.com/maps/api/geocode/json`; // ?latlng=${lat},${long}&key=${API_KEY}
 	}
 
 	/**
@@ -72,9 +74,11 @@ export class PluginService {
 	/**
 	 * Sends a GET request to fetch a random GIF related to the tag inputted
 	 * 
+	 * https://developers.giphy.com/docs/api/
+	 * 
 	 * @param tag 
 	 */
-	async getGIF(tag: string) {		
+	async getGIF(tag: string) {
 		try {
 			const resp = await fetch(`${this.giphyAPI}&tag=${tag}&rating=R`, {
 				method: "GET"
@@ -85,6 +89,29 @@ export class PluginService {
 				return json.data.images.fixed_height_small.url; // Return the URL of the gif
 			}
 		} catch (err) {
+			throw new Error(err);
+		}
+	}
+
+	/**
+	 * Sends a GET request to fetch the location from based on lat and long
+	 * 
+	 * https://developers.google.com/maps/documentation/geocoding/start
+	 * 
+	 * @param lat 
+	 * @param long 
+	 */
+	async getLocation(lat: number, long: number) {
+		try {
+			const resp = await fetch(`${this.geocodingAPI}?latlng=${lat},${long}&key=${this.GOOGLE_API_KEY}`, {
+				method: "GET"
+			});
+
+			if(resp.status === 200) {
+				const json = await resp.json();
+				return json.results[0].formatted_address;
+			}
+		} catch(err) {
 			throw new Error(err);
 		}
 	}

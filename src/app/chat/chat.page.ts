@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, ActionSheetController, ModalController, AlertController } from "@ionic/angular";
+import { Geolocation } from "@ionic-native/geolocation/ngx";
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
@@ -21,6 +22,7 @@ export class ChatPage implements OnInit {
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
+		private geolocation: Geolocation,
 		private alertController: AlertController,
 		private modalController: ModalController,
 		private pluginService: PluginService,
@@ -106,7 +108,9 @@ export class ChatPage implements OnInit {
 				this.messages = allMessages;
 
 				// Scroll to the bottom after messages are generated
-				this.content.scrollToBottom();
+				setTimeout(() => {
+					this.content.scrollToBottom();
+				}, 100)
 			});
 	}
 
@@ -161,7 +165,7 @@ export class ChatPage implements OnInit {
 										text: 'Submit',
 										handler: async (data) => {
 											// Get random GIF based on search term
-											const gif = await this.pluginService.getGIF(data.term);
+											const gif = await this.pluginService.getGIF(data.term.trim());
 
 											// Append link to textarea
 											this.messageForm.setValue({
@@ -214,7 +218,7 @@ export class ChatPage implements OnInit {
 								.then(async d => {
 									const data = d.data;
 									const lang = data.lang;
-									const text = data.text;
+									const text = data.text.trim();
 
 									// Translate
 									const translatedText = await this.pluginService.getTranslate(text, lang);
@@ -235,14 +239,26 @@ export class ChatPage implements OnInit {
 					text: 'Share Location',
 					icon: 'pin',
 					handler: () => {
-						alert("Location")
+						try {
+							// Get the current geolocation of the device
+							this.geolocation.getCurrentPosition()
+								.then(async resp => {
+									const address = await this.pluginService.getLocation(resp.coords.latitude, resp.coords.longitude);
+
+									// Append the address to the textarea
+									this.messageForm.setValue({
+										message: address
+									})
+								})
+						} catch (err) {
+							this.error = true;
+						}
 					}
 				}]
 			});
 
 			return await actionSheet.present();
 		} catch (err) {
-			console.log(err);
 			this.error = true;
 		}
 	}
