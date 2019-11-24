@@ -79,7 +79,7 @@ export class UserService {
 				const svgString = jdenticon.toSvg(username.trim().toLowerCase(), 100);
 
 				// Add the user to firebase
-				await this.ref.doc(username).set({
+				await this.ref.doc(username.trim().toLowerCase()).set({
 					username: username.trim().toLowerCase(),
 					fname: fname.trim(),
 					lname: lname.trim(),
@@ -89,7 +89,7 @@ export class UserService {
 				});
 
 				// Prepare the user data
-				this.prepareUser(fname.trim(), lname.trim(), username);
+				this.prepareUser(fname.trim(), lname.trim(), username.trim().toLowerCase());
 
 				return true;
 			}

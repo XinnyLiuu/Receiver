@@ -51,10 +51,11 @@ export class ChatPage implements OnInit {
 
 				// Check if the user exists
 				const exists = await this.userService.isUserExists(contact);
-
 				if (!exists) return this.router.navigate(["/messages"]);
 			} catch (err) {
-				return this.router.navigate(["/messages"]);
+				this.error = true;
+				this.errorMessage = "Error with loading the chat!";
+				// return this.router.navigate(["/messages"]);
 			}
 		});
 
@@ -119,15 +120,16 @@ export class ChatPage implements OnInit {
 
 				// Check the previous length of this.messages
 				this.messages = allMessages;
-				if (this.prevLength < this.messages.length) {
-					this.prevLength = this.messages.length;
 
-					// Send out a new notification
-					this.localNotifications.schedule({
-						title: `New Message from ${this.contact}`,
-						text: `${allMessages[allMessages.length-1].text}`
-					});
-				}
+				// if (this.prevLength < this.messages.length) {
+				// 	this.prevLength = this.messages.length;
+
+				// 	// Send out a new notification
+				// 	this.localNotifications.schedule({
+				// 		title: `New Message from ${this.contact}`,
+				// 		text: `${allMessages[allMessages.length-1].text}`
+				// 	});
+				// }
 
 				// Scroll to the bottom after messages are generated
 				setTimeout(() => {
@@ -314,6 +316,7 @@ export class ChatPage implements OnInit {
 			return await actionSheet.present();
 		} catch (err) {
 			this.error = true;
+			this.errorMessage = "Error with loading plugins at this time! Please try again later!";
 		}
 	}
 }

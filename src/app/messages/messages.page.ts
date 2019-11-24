@@ -89,8 +89,11 @@ export class MessagesPage implements OnInit {
 	 * Combine the messages received and sent to load all messages for the user
 	 */
 	getMessages() {
+		const sentMessages$: Observable<any> = this.getSentMessages();
+		const receivedMessages$: Observable<any> = this.getReceivedMessages();
+
 		// Combine the two observables and parse the data to create a single latest message for the current user
-		combineLatest(this.getReceivedMessages(), this.getSentMessages(), (received: any[], sent: any[]) => ({ received, sent }))
+		combineLatest(receivedMessages$, sentMessages$, (received: any[], sent: any[]) => ({ received, sent }))
 			.subscribe(pair => {
 				const received = pair.received;
 				const sent = pair.sent;
@@ -149,7 +152,6 @@ export class MessagesPage implements OnInit {
 					latest.timestamp = new Date(latest.timestamp).toLocaleString();
 					latest.contact = key;
 
-					// Get each contacts icon as well
 					try {
 						// Get the svg string and convert it to base64 to load into the DOM as an image src
 						const svg = await this.userService.getUserIcon(key);
