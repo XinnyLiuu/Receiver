@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import * as jdenticon from "jdenticon";
+
 import { FirebaseService } from '../firebase/firebase.service';
 import { CryptoService } from '../crypto/crypto.service';
 
@@ -73,13 +75,17 @@ export class UserService {
 				const salt = this.cryptoService.getSalt();
 				password = this.cryptoService.hash(password.trim(), salt);
 
+				// Create a icon for this user via jdenticon https://jdenticon.com/
+				const svgString = jdenticon.toSvg(username.trim().toLowerCase(), 100);
+
 				// Add the user to firebase
 				await this.ref.doc(username).set({
 					username: username.trim().toLowerCase(),
 					fname: fname.trim(),
 					lname: lname.trim(),
 					password: password,
-					salt: salt
+					salt: salt,
+					icon: svgString
 				});
 
 				// Prepare the user data
@@ -230,6 +236,22 @@ export class UserService {
 			const salt = doc.data().salt;
 
 			return salt;
+		} catch (err) {
+			throw new Error(err);
+		}
+	}
+
+	/**
+	 * Get the user's icon
+	 * 
+	 * @param username 
+	 */
+	async getUserIcon(username: string) {
+		try {
+			const doc = await this.ref.doc(username).get();
+			const icon = doc.data().icon;
+
+			return icon;
 		} catch (err) {
 			throw new Error(err);
 		}

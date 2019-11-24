@@ -23,6 +23,7 @@ export class ChatPage implements OnInit {
 	private messages: Array<any>;
 	private prevLength: number; // Stores the previous length of messages to track new messages
 	private error: boolean;
+	private errorMessage: string;
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
@@ -72,6 +73,7 @@ export class ChatPage implements OnInit {
 
 		// Default error to false
 		this.error = false;
+		this.errorMessage = "An error has occurred!";
 	}
 
 	/**
@@ -146,13 +148,17 @@ export class ChatPage implements OnInit {
 
 			const success = await this.messageService.createMessage(username, this.contact, message);
 
-			if (!success) this.error = true;
+			if (!success) {
+				this.error = true;
+				this.errorMessage = "Could not send the message at this time!";
+			}
 			else {
 				this.messageForm.reset();
 				this.content.scrollToBottom();
 			}
 		} catch (err) {
 			this.error = true;
+			this.errorMessage = "Could not send the message at this time!";
 		}
 	}
 
@@ -203,6 +209,7 @@ export class ChatPage implements OnInit {
 							await alert.present();
 						} catch (err) {
 							this.error = true;
+							this.errorMessage = "An error has occurred with GIPHY, please try again later!";
 						}
 					}
 				},
@@ -220,6 +227,7 @@ export class ChatPage implements OnInit {
 							});
 						} catch (err) {
 							this.error = true;
+							this.errorMessage = "An error has occurred with Dad Jokes, please try again later!";
 						}
 					}
 				},
@@ -252,6 +260,7 @@ export class ChatPage implements OnInit {
 							return await modal.present();
 						} catch (err) {
 							this.error = true;
+							this.errorMessage = "An error has occurred with Translate, please try again later!";
 						}
 					}
 				},
@@ -272,6 +281,7 @@ export class ChatPage implements OnInit {
 								})
 						} catch (err) {
 							this.error = true;
+							this.errorMessage = "An error has occurred with Sharing Location, please try again later!";
 						}
 					}
 				},
@@ -295,6 +305,7 @@ export class ChatPage implements OnInit {
 								})
 						} catch (err) {
 							this.error = true;
+							this.errorMessage = "An error has occurred with Camera, please try again later!";
 						}
 					}
 				}]

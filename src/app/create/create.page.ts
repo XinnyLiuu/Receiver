@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 export class CreatePage implements OnInit {
 	private users: any[];
 	private error: boolean;
+	private errorMessage: string;
 	private searchTerm: string;
 
 	constructor(
@@ -26,6 +27,7 @@ export class CreatePage implements OnInit {
 
 		// Default error 
 		this.error = false;
+		this.errorMessage = "An error has occurred!";
 	}
 
 	/**
@@ -37,6 +39,7 @@ export class CreatePage implements OnInit {
 			// this.users = this.users.filter(user => { return user.username !== this.userService.getUsername()});
 		} catch (err) {
 			this.error = true;
+			this.errorMessage = "Could not get the list of users!";
 		}
 	}
 
@@ -53,11 +56,16 @@ export class CreatePage implements OnInit {
 	 * Based on the text inputted through the search bar, filter through the list of users
 	 */
 	async filterUsers() {
-		await this.getUsers();
+		try {
+			await this.getUsers();
 
-		// Filter the user for usernames and fullnames that due not match the search term
-		this.users = this.users.filter(user => {
-			return user.username.indexOf(this.searchTerm.toLowerCase()) > -1 || user.fullname.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1;
-		});
+			// Filter the user for usernames and fullnames that due not match the search term
+			this.users = this.users.filter(user => {
+				return user.username.indexOf(this.searchTerm.toLowerCase()) > -1 || user.fullname.toLowerCase().indexOf(this.searchTerm.toLowerCase()) > -1;
+			});
+		} catch (err) {
+			this.error = true;
+			this.errorMessage = "An error has occured!";
+		}
 	}
 }

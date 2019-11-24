@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
+import { DomSanitizer } from '@angular/platform-browser';
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
@@ -16,8 +17,11 @@ export class MessagesPage implements OnInit {
 	private isDarkMode: boolean;
 	private username: string;
 	private fullName: string;
+	private error: boolean;
+	private errorMessage: string;
 
 	constructor(
+		private domSanitizer: DomSanitizer,
 		private router: Router,
 		private darkModeService: DarkModeService,
 		private messageService: MessagesService,
@@ -34,6 +38,10 @@ export class MessagesPage implements OnInit {
 		// Dark Mode
 		this.darkModeService.init();
 		this.isDarkMode = this.darkModeService.getIsDarkMode();
+
+		// Default error
+		this.error = false;
+		this.errorMessage = "An error has occurred!";
 	}
 
 	/**
@@ -132,7 +140,7 @@ export class MessagesPage implements OnInit {
 
 				// Iterate through each contact in the map to get the latest message
 				let allMessages = [];
-				contacts.forEach((value, key) => {
+				contacts.forEach(async (value, key) => {
 					const messages = value;
 					if (messages.length > 0) messages.sort((a, b) => a.timestamp > b.timestamp ? -1 : 1); // Sort the messages in descending order
 
@@ -140,6 +148,18 @@ export class MessagesPage implements OnInit {
 					const latest = messages[0];
 					latest.timestamp = new Date(latest.timestamp).toLocaleString();
 					latest.contact = key;
+
+					// Get each contacts icon as well
+					try {
+						// Get the svg string and convert it to base64 to load into the DOM as an image src
+						const svg = await this.userService.getUserIcon(key);
+						const src = `data:image/svg+xml;base64,${window.btoa(svg)}`;
+						latest.icon = src;
+					} catch (err) {
+						this.error = true;
+						this.errorMessage = "Error with loading profile icons!";
+					}
+
 					allMessages.push(latest);
 				});
 

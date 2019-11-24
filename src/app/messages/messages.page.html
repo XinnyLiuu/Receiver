@@ -6,6 +6,10 @@
 	</ion-toolbar>
 </ion-header>
 
+<ion-toolbar [hidden]="!error" color="danger">
+	<ion-title>{{errorMessage}}</ion-title>
+</ion-toolbar>
+
 <ion-content>
 	<ion-list class="ion-padding" *ngIf="messages.length === 0">
 		<ion-item>
@@ -19,7 +23,7 @@
 		<ion-list-header>All Conversations</ion-list-header>
 		<ion-item button *ngFor="let message of messages" (click)="openChat(message.contact)">
 			<ion-avatar size="large" slot="start">
-				<img src="https://gravatar.com/avatar/dba6bae8c566f9d4041fb9cd9ada7741?d=identicon&f=y">
+				<img [src]="domSanitizer.bypassSecurityTrustResourceUrl(message.icon)">
 			</ion-avatar>
 			<ion-label>
 				<h2>{{message.contact}}</h2>
