@@ -74,7 +74,7 @@ export class PluginService {
 	 * 
 	 * @param tag 
 	 */
-	async getGIF(tag: string) {
+	async getGIF(tag: string) {		
 		try {
 			const resp = await fetch(`${this.giphyAPI}&tag=${tag}&rating=R`, {
 				method: "GET"

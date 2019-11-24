@@ -1,13 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, ActionSheetController, ModalController } from "@ionic/angular";
+import { IonContent, ActionSheetController, ModalController, AlertController } from "@ionic/angular";
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
 import { PluginService } from '../service/plugin/plugin.service';
 import { ModalComponent } from '../modal/modal.component';
-import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
 	selector: 'app-chat',
@@ -22,7 +21,7 @@ export class ChatPage implements OnInit {
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
-		private domSanitizer: DomSanitizer,
+		private alertController: AlertController,
 		private modalController: ModalController,
 		private pluginService: PluginService,
 		private actionSheetController: ActionSheetController,
@@ -147,13 +146,37 @@ export class ChatPage implements OnInit {
 					icon: 'aperture',
 					handler: async () => {
 						try {
-							// Get random GIF based on search term
-							const gif = await this.pluginService.getGIF("boobies");
+							// Show an alert that allows the user to input what gif they want to search for
+							const alert = await this.alertController.create({
+								header: "GIPHY",
+								inputs: [
+									{
+										name: "term",
+										type: "text",
+										placeholder: "Enter a search term for a random gif"
+									}
+								],
+								buttons: [
+									{
+										text: 'Submit',
+										handler: async (data) => {
+											// Get random GIF based on search term
+											const gif = await this.pluginService.getGIF(data.term);
 
-							// Append link to textarea
-							this.messageForm.setValue({
-								message: gif
+											// Append link to textarea
+											this.messageForm.setValue({
+												message: gif
+											});
+										}
+									},
+									{
+										text: "Cancel",
+										role: 'cancel'
+									}
+								]
 							});
+
+							await alert.present();
 						} catch (err) {
 							this.error = true;
 						}
