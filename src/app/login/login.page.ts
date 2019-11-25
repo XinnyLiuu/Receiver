@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 
 import { UserService } from "../service/user/user.service";
-import { CryptoService } from "../service/crypto/crypto.service";
 import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 
 @Component({
