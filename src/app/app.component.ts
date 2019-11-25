@@ -24,6 +24,7 @@ export class AppComponent {
 			this.splashScreen.hide();
 
 			if (this.platform.is('android')) {
+				this.splashScreen.hide();
 				this.statusBar.overlaysWebView(false);
 				this.statusBar.backgroundColorByHexString("#121212");
 			}

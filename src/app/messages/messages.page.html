@@ -20,8 +20,7 @@
 			<ion-label>
 				<h2>{{message.fullname}} ({{message.contact}})</h2>
 				<h3>
-					<span *ngIf="message.myself">You: </span>
-					{{message.message}}
+					<span *ngIf="message.myself">You: </span>{{message.message}}
 				</h3>
 				<p>{{message.timestamp}}</p>
 			</ion-label>

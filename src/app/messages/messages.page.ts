@@ -9,6 +9,7 @@ import { MessagesService } from "../service/messages/messages.service";
 import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 
 import { Observable, combineLatest } from 'rxjs';
+import { all } from 'q';
 
 @Component({
 	selector: 'app-messages',
@@ -16,6 +17,7 @@ import { Observable, combineLatest } from 'rxjs';
 	styleUrls: ['./messages.page.scss'],
 })
 export class MessagesPage implements OnInit {
+	private lastNotifiedMessage: string;
 	private messages: Array<any>;
 	private isDarkMode: boolean;
 	private username: string;
@@ -42,6 +44,8 @@ export class MessagesPage implements OnInit {
 		this.fullName = this.userService.getFullName();
 		this.messages = [];
 		this.getMessages();
+
+		this.lastNotifiedMessage = "";
 
 		// Dark Mode
 		this.darkModeService.init();
@@ -174,13 +178,20 @@ export class MessagesPage implements OnInit {
 					latest.contact = key;
 
 					// Check if the latest message received is not from the contact and send a notification 
-					if (!latest.myself) {
+					if (!latest.myself &&
+						key !== this.username &&
+						latest.message !== this.lastNotifiedMessage) {
+
+						// https://github.com/katzer/cordova-plugin-local-notifications/issues/1681
 						this.localNotifications.schedule({
 							title: `${key}`,
 							text: `${latest.message}`,
-							icon: "res://assets/icon/favicon.png",
-							smallIcon: "res://favicon.png"
-						})
+							smallIcon: "res://n_icon.png",
+							color: "#e0b500"
+						});
+
+						// Set the notified message as the last notified message so that the user won't get notified again
+						this.lastNotifiedMessage = latest.message;
 					}
 
 					// Prepare the latest message with the user's icon and fullname

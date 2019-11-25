@@ -135,7 +135,7 @@ export class ChatPage implements OnInit {
 				// Scroll to the bottom after messages are generated
 				setTimeout(() => {
 					this.content.scrollToBottom();
-				});
+				}, 50);
 			});
 	}
 
