@@ -11,20 +11,28 @@
 </ion-toolbar>
 
 <ion-content>
-	<ion-list *ngIf="messages.length > 0" class="ion-padding">
+	<ion-list class="ion-padding">
 		<ion-list-header>All Conversations</ion-list-header>
-		<ion-item button *ngFor="let message of messages" (click)="openChat(message.contact)">
-			<ion-avatar size="large" slot="start">
-				<img [src]="domSanitizer.bypassSecurityTrustResourceUrl(message.icon)">
-			</ion-avatar>
-			<ion-label>
-				<h2>{{message.fullname}} ({{message.contact}})</h2>
-				<h3>
-					<span *ngIf="message.myself">You: </span>{{message.message}}
-				</h3>
-				<p>{{message.timestamp}}</p>
-			</ion-label>
-		</ion-item>
+
+		<ion-item-sliding *ngFor="let message of messages">
+			<ion-item button (click)="openChat(message.contact)">
+				<ion-avatar size="large" slot="start">
+					<img [src]="domSanitizer.bypassSecurityTrustResourceUrl(message.icon)">
+				</ion-avatar>
+				<ion-label>
+					<h2>{{message.fullname}} ({{message.contact}})</h2>
+					<h3>
+						<span *ngIf="message.myself">You: </span>{{message.message}}
+					</h3>
+					<p>{{message.timestamp}}</p>
+				</ion-label>
+			</ion-item>
+			<ion-item-options slot="end">
+				<ion-item-option color="danger" (click)="deleteConversation(message.contact)">
+					<ion-icon name="trash" size="large"></ion-icon>
+				</ion-item-option>
+			</ion-item-options>
+		</ion-item-sliding>
 	</ion-list>
 
 	<ion-fab vertical="bottom" horizontal="end" slot="fixed" edge>

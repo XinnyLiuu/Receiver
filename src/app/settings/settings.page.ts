@@ -13,6 +13,7 @@ export class SettingsPage implements OnInit {
 	private settingsForm: FormGroup;
 	private error: boolean;
 	private errorMessage: string;
+	private username: string;
 
 	constructor(
 		private router: Router,
@@ -30,6 +31,8 @@ export class SettingsPage implements OnInit {
 
 		// Set dark mode (if any)
 		if (localStorage.getItem("dark") === "true") document.body.classList.toggle('dark', true);
+
+		this.username = this.userService.getUsername();
 
 		// Default error
 		this.error = false;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { DomSanitizer } from '@angular/platform-browser';
-import { LoadingController } from "@ionic/angular";
+import { LoadingController, AlertController } from "@ionic/angular";
 import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 import { UserService } from "../service/user/user.service";
@@ -26,6 +26,7 @@ export class MessagesPage implements OnInit {
 	private errorMessage: string;
 
 	constructor(
+		private alertController: AlertController,
 		private localNotifications: LocalNotifications,
 		private loadingController: LoadingController,
 		private domSanitizer: DomSanitizer,
@@ -213,6 +214,58 @@ export class MessagesPage implements OnInit {
 
 				this.messages = allMessages;
 			})
+	}
+
+	/**
+	 * Deletes the conversation between the current user and the contact
+	 * 
+	 * @param contact 
+	 */
+	async deleteConversation(contact: string) {
+		try {
+			const alert = await this.alertController.create({
+				header: "Delete Conversation",
+				message: "This action cannot be undone",
+				buttons: [
+					{
+						text: "Ok",
+						handler: async () => {
+							try {
+								// Remove all messages where the sender is the user and contact AND where the recipient is the user and contact
+								let querySnapshot = await this.messageService.getRef()
+									.where("sender", "==", this.username)
+									.where("recipient", "==", contact)
+									.get();
+
+								querySnapshot.forEach(doc => {
+									doc.ref.delete();
+								});
+
+								querySnapshot = await this.messageService.getRef()
+									.where("sender", "==", contact)
+									.where("recipient", "==", this.username)
+									.get();
+
+								querySnapshot.forEach(doc => {
+									doc.ref.delete();
+								})
+							} catch (err) {
+								throw new Error(err);
+							}
+						}
+					},
+					{
+						text: "Cancel",
+						role: "cancel"
+					}
+				]
+			});
+
+			await alert.present();
+		} catch (err) {
+			this.error = true;
+			this.errorMessage = "Error removing the conversation!";
+		}
 	}
 
 	/**
