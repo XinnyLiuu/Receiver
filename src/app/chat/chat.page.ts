@@ -2,10 +2,8 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from "@angular/forms";
 import { ActivatedRoute, Router } from '@angular/router';
 
-import { IonContent, ActionSheetController, ModalController, AlertController } from "@ionic/angular";
+import { IonContent, ActionSheetController, ModalController, AlertController, LoadingController } from "@ionic/angular";
 import { Geolocation } from "@ionic-native/geolocation/ngx";
-import { Camera, CameraOptions } from "@ionic-native/camera/ngx";
-import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
@@ -20,17 +18,13 @@ import { ModalComponent } from '../modal/modal.component';
 export class ChatPage implements OnInit {
 	private messageForm: FormGroup;
 	private contact: string;
-	private fullname: string;
-	private src: string;
 	private messages: Array<any>;
-	private prevLength: number; // Stores the previous length of messages to track new messages
 	private error: boolean;
 	private errorMessage: string;
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
-		private localNotifications: LocalNotifications,
-		private camera: Camera,
+		private loadingController: LoadingController,
 		private geolocation: Geolocation,
 		private alertController: AlertController,
 		private modalController: ModalController,
@@ -65,14 +59,8 @@ export class ChatPage implements OnInit {
 			}
 		});
 
-		// Add the full name and icon of the contact
-		this.fullname = "";
-		this.src = "";
-		this.getContactInfo();
-
 		// Get all messages the current user has with the contact
 		this.messages = [];
-		this.prevLength = 0;
 		this.getChat();
 
 		// Prepare the messaging form
@@ -89,15 +77,15 @@ export class ChatPage implements OnInit {
 	}
 
 	/**
-	 * Gets the full name of the contact
+	 * Shows the loading spinner until messages are ready
 	 */
-	async getContactInfo() {
-		try {
-			this.fullname = await this.userService.getUserFullName(this.contact);
-		} catch (err) {
-			this.error = true;
-			this.errorMessage = "Error with loading the chat!";
-		}
+	async showSpinner() {
+		const loading = await this.loadingController.create({
+			spinner: "crescent",
+			duration: 200
+		});
+
+		return await loading.present();
 	}
 
 	/**
@@ -143,16 +131,6 @@ export class ChatPage implements OnInit {
 
 				// Check the previous length of this.messages
 				this.messages = allMessages;
-
-				// if (this.prevLength < this.messages.length) {
-				// 	this.prevLength = this.messages.length;
-
-				// 	// Send out a new notification
-				// 	this.localNotifications.schedule({
-				// 		title: `New Message from ${this.contact}`,
-				// 		text: `${allMessages[allMessages.length-1].text}`
-				// 	});
-				// }
 
 				// Scroll to the bottom after messages are generated
 				setTimeout(() => {
@@ -297,6 +275,9 @@ export class ChatPage implements OnInit {
 							// Get the current geolocation of the device
 							this.geolocation.getCurrentPosition()
 								.then(async resp => {
+									// Show spinner
+									this.showSpinner();
+
 									const address = await this.pluginService.getLocation(resp.coords.latitude, resp.coords.longitude);
 
 									// Append the address to the textarea
@@ -307,30 +288,6 @@ export class ChatPage implements OnInit {
 						} catch (err) {
 							this.error = true;
 							this.errorMessage = "An error has occurred with Sharing Location, please try again later!";
-						}
-					}
-				},
-				{
-					text: "Camera",
-					icon: 'camera',
-					handler: () => {
-						try {
-							// Setup camera config for cordova plugin
-							const opts: CameraOptions = {
-								quality: 25,
-								destinationType: this.camera.DestinationType.FILE_URI,
-								encodingType: this.camera.EncodingType.JPEG,
-								mediaType: this.camera.MediaType.PICTURE
-							};
-
-							// Take the picture
-							this.camera.getPicture(opts)
-								.then(resp => {
-									console.log(resp);
-								})
-						} catch (err) {
-							this.error = true;
-							this.errorMessage = "An error has occurred with Camera, please try again later!";
 						}
 					}
 				}]

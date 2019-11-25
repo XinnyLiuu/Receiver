@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from "@angular/router";
 import { DomSanitizer } from '@angular/platform-browser';
+import { LoadingController } from "@ionic/angular";
+import { LocalNotifications } from '@ionic-native/local-notifications/ngx';
 
 import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
 import { DarkModeService } from "../service/dark-mode/dark-mode.service";
+
 import { Observable, combineLatest } from 'rxjs';
 
 @Component({
@@ -21,6 +24,8 @@ export class MessagesPage implements OnInit {
 	private errorMessage: string;
 
 	constructor(
+		private localNotifications: LocalNotifications,
+		private loadingController: LoadingController,
 		private domSanitizer: DomSanitizer,
 		private router: Router,
 		private darkModeService: DarkModeService,
@@ -29,6 +34,9 @@ export class MessagesPage implements OnInit {
 	}
 
 	ngOnInit() {
+		// Present loading spinner until messages are ready 
+		this.showSpinner();
+
 		// Get all the messages where the current user is involved
 		this.username = this.userService.getUsername();
 		this.fullName = this.userService.getFullName();
@@ -42,6 +50,18 @@ export class MessagesPage implements OnInit {
 		// Default error
 		this.error = false;
 		this.errorMessage = "An error has occurred!";
+	}
+
+	/**
+	 * Shows the loading spinner until messages are ready
+	 */
+	async showSpinner() {
+		const loading = await this.loadingController.create({
+			spinner: "crescent",
+			duration: 100
+		});
+
+		return await loading.present();
 	}
 
 	/**
@@ -93,7 +113,7 @@ export class MessagesPage implements OnInit {
 
 		// Combine the two observables and parse the data to create a single latest message for the current user
 		combineLatest(receivedMessages$, sentMessages$, (received: any[], sent: any[]) => ({ received, sent }))
-			.subscribe(pair => {
+			.subscribe(async pair => {
 				const received = pair.received;
 				const sent = pair.sent;
 
@@ -152,6 +172,16 @@ export class MessagesPage implements OnInit {
 					const latest = messages[0];
 					latest.timestamp = new Date(latest.timestamp).toLocaleString();
 					latest.contact = key;
+
+					// Check if the latest message received is not from the contact and send a notification 
+					if (!latest.myself) {
+						this.localNotifications.schedule({
+							title: `${key}`,
+							text: `${latest.message}`,
+							icon: "res://assets/icon/favicon.png",
+							smallIcon: "res://favicon.png"
+						})
+					}
 
 					// Prepare the latest message with the user's icon and fullname
 					try {

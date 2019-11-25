@@ -10,7 +10,7 @@ export class DarkModeService {
 	}
 
 	init() {
-		this.isDarkMode = false;
+		this.isDarkMode = true; // Default to true
 		this.toggleDarkMode();
 		document.body.classList.toggle('dark', this.isDarkMode);
 	}

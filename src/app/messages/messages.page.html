@@ -11,14 +11,6 @@
 </ion-toolbar>
 
 <ion-content>
-	<ion-list class="ion-padding" *ngIf="messages.length === 0">
-		<ion-item>
-			<ion-title>
-				No messages at this time!
-			</ion-title>
-		</ion-item>
-	</ion-list>
-
 	<ion-list *ngIf="messages.length > 0" class="ion-padding">
 		<ion-list-header>All Conversations</ion-list-header>
 		<ion-item button *ngFor="let message of messages" (click)="openChat(message.contact)">

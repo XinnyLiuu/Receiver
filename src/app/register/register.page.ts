@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup } from "@angular/forms";
 import { Router } from "@angular/router";
 
 import { UserService } from "../service/user/user.service";
-import { DarkModeService } from '../service/dark-mode/dark-mode.service';
 
 @Component({
 	selector: 'app-register',
@@ -17,7 +16,6 @@ export class RegisterPage implements OnInit {
 	private isDarkMode: boolean;
 
 	constructor(
-		private darkModeService: DarkModeService,
 		private userService: UserService,
 		private formBuilder: FormBuilder,
 		private router: Router) {
@@ -31,10 +29,6 @@ export class RegisterPage implements OnInit {
 			username: "",
 			password: ""
 		});
-
-		// Dark Mode
-		this.darkModeService.init();
-		this.isDarkMode = this.darkModeService.getIsDarkMode();
 
 		// Default error to false
 		this.error = false;

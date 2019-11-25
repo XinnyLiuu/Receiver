@@ -6,7 +6,6 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
-import { Camera } from "@ionic-native/camera/ngx";
 import { LocalNotifications } from "@ionic-native/local-notifications/ngx";
 
 import { AppComponent } from './app.component';
@@ -36,7 +35,6 @@ import { RoleGuardService } from "./service/role-guard/role-guard.service";
 		AuthGuardService,
 		RoleGuardService,
 		Geolocation,
-		Camera,
 		LocalNotifications
 	],
 	bootstrap: [AppComponent]

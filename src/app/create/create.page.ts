@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../service/user/user.service';
 import { Router } from '@angular/router';
+import { LoadingController } from '@ionic/angular';
 
 @Component({
 	selector: 'app-create',
@@ -14,10 +15,14 @@ export class CreatePage implements OnInit {
 	private searchTerm: string;
 
 	constructor(
+		private loadingController: LoadingController,
 		private router: Router,
 		private userService: UserService) { }
 
 	ngOnInit() {
+		// Show spinner
+		this.showSpinner();
+
 		// Set dark mode (if any)
 		if (localStorage.getItem("dark") === "true") document.body.classList.toggle('dark', true);
 
@@ -28,6 +33,18 @@ export class CreatePage implements OnInit {
 		// Default error 
 		this.error = false;
 		this.errorMessage = "An error has occurred!";
+	}
+
+	/**
+	 * Shows the loading spinner until messages are ready
+	 */
+	async showSpinner() { 
+		const loading = await this.loadingController.create({
+			spinner: "crescent",
+			duration: 100
+		});
+
+		return await loading.present();
 	}
 
 	/**
