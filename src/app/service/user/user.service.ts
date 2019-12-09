@@ -171,17 +171,21 @@ export class UserService {
 				// Hash password
 				password = this.cryptoService.hash(password, salt);
 
+				// Create a icon for this user via jdenticon https://jdenticon.com/
+				const svgString = jdenticon.toSvg(this.getUsername(), 100);
+
 				// Call firebase to update data
 				await this.ref.doc(this.getUsername()).set({
 					username: this.getUsername(),
 					fname: firstname,
 					lname: lastname,
 					password: password,
-					salt: salt
+					salt: salt,
+					icon: svgString
 				});
 
 				// Prepare the user data
-				this.prepareUser(firstname.trim(), lastname.trim(), this.getUsername());
+				this.prepareUser(firstname, lastname, this.getUsername());
 
 				return true;
 			}
