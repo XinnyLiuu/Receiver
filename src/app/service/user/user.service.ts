@@ -153,6 +153,8 @@ export class UserService {
 			// Get the values from the formData object
 			let { firstname, lastname, password } = formData;
 
+			console.log(lastname);
+
 			firstname = firstname.trim().toLowerCase();
 			lastname = lastname.trim().toLowerCase();
 			password = password.trim();
@@ -163,7 +165,7 @@ export class UserService {
 			if (exists) {
 				// Capitalize first + last name
 				firstname = firstname.charAt(0).toUpperCase() + firstname.slice(1);
-				lastname = lastname.charAt(0).toLowerCase() + lastname.slice(1);
+				lastname = lastname.charAt(0).toUpperCase() + lastname.slice(1);
 
 				// Create new salt
 				const salt = this.cryptoService.getSalt();
