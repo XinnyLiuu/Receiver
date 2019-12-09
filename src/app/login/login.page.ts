@@ -46,11 +46,6 @@ export class LoginPage implements OnInit {
 	 */
 	async login(userData) {
 		try {
-			// Grab values
-			let { username, password } = userData;
-			username = username.trim().toLowerCase();
-			userData.username = username;
-
 			// Login the user
 			const loggedIn = await this.userService.loginUser(userData);
 
@@ -61,10 +56,10 @@ export class LoginPage implements OnInit {
 			}
 
 			this.error = true;
-			this.errorMessage = "Could not login the user at this time. Please try again later!";
+			this.errorMessage = "The username or password does not match our records. Please try again!";
 		} catch (err) {
 			this.error = true;
-			this.errorMessage = "Could not login the user at this time. Please try again later!";
+			this.errorMessage = "The username or password does not match our records. Please try again!";
 		}
 	}
 

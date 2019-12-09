@@ -39,7 +39,6 @@ ionic cordova run android
 ```
 
 ### TODO
-- Encrypt messages
 - File upload
 - iOS testing
 

@@ -10,6 +10,7 @@ import { DarkModeService } from "../service/dark-mode/dark-mode.service";
 
 import { Observable, combineLatest } from 'rxjs';
 import { all } from 'q';
+import { CryptoService } from '../service/crypto/crypto.service';
 
 @Component({
 	selector: 'app-messages',
@@ -26,6 +27,7 @@ export class MessagesPage implements OnInit {
 	private errorMessage: string;
 
 	constructor(
+		private cryptoService: CryptoService,
 		private alertController: AlertController,
 		private localNotifications: LocalNotifications,
 		private loadingController: LoadingController,
@@ -132,13 +134,13 @@ export class MessagesPage implements OnInit {
 
 					if (contacts.get(contact) !== undefined) {
 						contacts.get(contact).push({
-							message: message,
+							message: this.cryptoService.decrypt(message),
 							timestamp: timestamp,
 							myself: false
 						});
 					} else {
 						contacts.set(contact, [{
-							message: message,
+							message: this.cryptoService.decrypt(message),
 							timestamp: timestamp,
 							myself: false
 						}])
@@ -152,13 +154,13 @@ export class MessagesPage implements OnInit {
 
 					if (contacts.get(contact) !== undefined) {
 						contacts.get(contact).push({
-							message: message,
+							message: this.cryptoService.decrypt(message),
 							timestamp: timestamp,
 							myself: true
 						});
 					} else {
 						contacts.set(contact, [{
-							message: message,
+							message: this.cryptoService.decrypt(message),
 							timestamp: timestamp,
 							myself: true
 						}])

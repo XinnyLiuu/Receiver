@@ -6,7 +6,10 @@ import { sha256 } from "js-sha256";
 	providedIn: 'root'
 })
 export class CryptoService {
+	private sc: SimpleCrypto;
+
 	constructor() {
+		this.sc = new SimpleCrypto("EncryptionIsGood");
 	}
 
 	/**
@@ -18,6 +21,9 @@ export class CryptoService {
 
 	/**
 	 * Encrypt password 
+	 * 
+	 * @param message
+	 * @param salt
 	 */
 	hash(password: string, salt: string) {
 		/**
@@ -25,5 +31,23 @@ export class CryptoService {
 		 */
 		password = sha256(password + salt);
 		return password;
+	}
+
+	/**
+	 * Encrypts the message
+	 * 
+	 * @param message 
+	 */
+	encrypt(message: string) {
+		return this.sc.encrypt(message);
+	}
+
+	/**
+	 * Decrypts the message
+	 * 
+	 * @param message
+	 */
+	decrypt(message: string) {
+		return this.sc.decrypt(message);
 	}
 }

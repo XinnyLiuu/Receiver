@@ -9,6 +9,7 @@ import { UserService } from "../service/user/user.service";
 import { MessagesService } from "../service/messages/messages.service";
 import { PluginService } from '../service/plugin/plugin.service';
 import { ModalComponent } from '../modal/modal.component';
+import { CryptoService } from '../service/crypto/crypto.service';
 
 @Component({
 	selector: 'app-chat',
@@ -24,6 +25,7 @@ export class ChatPage implements OnInit {
 	@ViewChild(IonContent, { static: false }) content: IonContent;
 
 	constructor(
+		private cryptoService: CryptoService,
 		private loadingController: LoadingController,
 		private geolocation: Geolocation,
 		private alertController: AlertController,
@@ -105,7 +107,7 @@ export class ChatPage implements OnInit {
 					if (doc.data().sender === username && doc.data().recipient === this.contact) {
 						sent.push({
 							sender: doc.data().sender,
-							text: doc.data().message,
+							text: this.cryptoService.decrypt(doc.data().message),
 							timestamp: new Date(doc.data().timestamp).toLocaleString(),
 							sent: true,
 							giphy: doc.data().giphy
@@ -115,7 +117,7 @@ export class ChatPage implements OnInit {
 					if (doc.data().sender === this.contact && doc.data().recipient === username) {
 						received.push({
 							sender: doc.data().sender,
-							text: doc.data().message,
+							text: this.cryptoService.decrypt(doc.data().message),
 							timestamp: new Date(doc.data().timestamp).toLocaleString(),
 							sent: false,
 							giphy: doc.data().giphy
@@ -146,7 +148,7 @@ export class ChatPage implements OnInit {
 	 */
 	async sendMessage(messageData) {
 		try {
-			let { message } = messageData; // TODO: encryption of message
+			let { message } = messageData;
 			const username = this.userService.getUsername();
 
 			const success = await this.messageService.createMessage(username, this.contact, message);

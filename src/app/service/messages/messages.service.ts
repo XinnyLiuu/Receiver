@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { FirebaseService } from '../firebase/firebase.service';
+import { CryptoService } from "../crypto/crypto.service";
 
 @Injectable({
 	providedIn: 'root'
@@ -8,7 +9,10 @@ export class MessagesService {
 	private db; // firebase 
 	private ref; // firebase collection reference
 
-	constructor(private firebaseService: FirebaseService) {
+	constructor(
+		private cryptoService: CryptoService,
+		private firebaseService: FirebaseService
+	) {
 		this.db = this.firebaseService.db;
 		this.ref = this.db.collection("messages");
 	}
@@ -33,13 +37,15 @@ export class MessagesService {
 			let messageObj = {
 				sender: sender,
 				recipient: recipient,
-				message: message, // TODO: Encrypt
+				message: this.cryptoService.encrypt(message),
 				timestamp: Date.parse(new Date().toLocaleString()),
 				giphy: false
 			}
 
 			// Check if the message is a giphy url
-			if (message.includes("https://") && message.includes("giphy") && message.includes("media")) messageObj["giphy"] = true;
+			if (message.includes("https://") &&
+				message.includes("giphy") &&
+				message.includes("media")) messageObj["giphy"] = true;
 
 			await this.ref.add(messageObj);
 

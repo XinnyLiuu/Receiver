@@ -38,7 +38,7 @@ export class CreatePage implements OnInit {
 	/**
 	 * Shows the loading spinner until messages are ready
 	 */
-	async showSpinner() { 
+	async showSpinner() {
 		const loading = await this.loadingController.create({
 			spinner: "crescent",
 			duration: 100

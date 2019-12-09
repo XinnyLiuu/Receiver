@@ -59,37 +59,41 @@ export class UserService {
 		try {
 			// Get values from form data
 			let { fname, lname, username, password } = userData;
+			fname = fname.trim().toLowerCase();
+			lname = lname.trim().toLowerCase();
+			username = username.trim().toLowerCase();
+			password = password.trim();
 
 			// Check if there are spaces in the username
 			if (username.indexOf(" ") >= 0) return false;
 
 			// Capitalize first + last name
-			fname.charAt(0).toUpperCase();
-			lname.charAt(0).toUpperCase();
+			fname = fname.charAt(0).toUpperCase() + fname.slice(1);
+			lname = lname.charAt(0).toUpperCase() + lname.slice(1);
 
 			// Check if the username already exists
-			const exists = await this.isUserExists(username.trim().toLowerCase())
+			const exists = await this.isUserExists(username);
 
 			if (!exists) {
 				// Hash the password
 				const salt = this.cryptoService.getSalt();
-				password = this.cryptoService.hash(password.trim(), salt);
+				password = this.cryptoService.hash(password, salt);
 
 				// Create a icon for this user via jdenticon https://jdenticon.com/
-				const svgString = jdenticon.toSvg(username.trim().toLowerCase(), 100);
+				const svgString = jdenticon.toSvg(username, 100);
 
 				// Add the user to firebase
-				await this.ref.doc(username.trim().toLowerCase()).set({
-					username: username.trim().toLowerCase(),
-					fname: fname.trim(),
-					lname: lname.trim(),
+				await this.ref.doc(username).set({
+					username: username,
+					fname: fname,
+					lname: lname,
 					password: password,
 					salt: salt,
 					icon: svgString
 				});
 
 				// Prepare the user data
-				this.prepareUser(fname.trim(), lname.trim(), username.trim().toLowerCase());
+				this.prepareUser(fname, lname, username);
 
 				return true;
 			}
@@ -110,6 +114,9 @@ export class UserService {
 			// Grab values from object
 			let { username, password } = userData;
 
+			username = username.trim().toLowerCase();
+			password = password.trim();
+
 			// Check if the user exists
 			const exists = await this.isUserExists(username);
 
@@ -119,7 +126,7 @@ export class UserService {
 				const salt = await this.getUserSalt(username);
 
 				// Hash the password
-				password = this.cryptoService.hash(password.trim(), salt);
+				password = this.cryptoService.hash(password, salt);
 
 				// Get the user's data
 				const data = await this.getUserByUsernamePassword(username, password);
@@ -146,25 +153,29 @@ export class UserService {
 			// Get the values from the formData object
 			let { firstname, lastname, password } = formData;
 
+			firstname = firstname.trim().toLowerCase();
+			lastname = lastname.trim().toLowerCase();
+			password = password.trim();
+
 			// Check if the username exists
 			const exists = await this.isUserExists(this.getUsername());
 
 			if (exists) {
 				// Capitalize first + last name
-				firstname.charAt(0).toUpperCase();
-				lastname.charAt(0).toLowerCase();
+				firstname = firstname.charAt(0).toUpperCase() + firstname.slice(1);
+				lastname = lastname.charAt(0).toLowerCase() + lastname.slice(1);
 
 				// Create new salt
 				const salt = this.cryptoService.getSalt();
 
 				// Hash password
-				password = this.cryptoService.hash(password.trim(), salt);
+				password = this.cryptoService.hash(password, salt);
 
 				// Call firebase to update data
 				await this.ref.doc(this.getUsername()).set({
 					username: this.getUsername(),
-					fname: firstname.trim(),
-					lname: lastname.trim(),
+					fname: firstname,
+					lname: lastname,
 					password: password,
 					salt: salt
 				});

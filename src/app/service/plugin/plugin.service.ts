@@ -15,7 +15,7 @@ export class PluginService {
 	constructor() {
 		this.dadJokeAPI = "https://icanhazdadjoke.com/";
 		this.translateAPI = `https://translation.googleapis.com/language/translate/v2?key=${this.GOOGLE_API_KEY}`;
-		this.giphyAPI = `https://api.giphy.com/v1/gifs/random?api_key=${this.GIPHY_API_KEY}`; 
+		this.giphyAPI = `https://api.giphy.com/v1/gifs/random?api_key=${this.GIPHY_API_KEY}`;
 		this.geocodingAPI = `https://maps.googleapis.com/maps/api/geocode/json`; // ?latlng=${lat},${long}&key=${API_KEY}
 	}
 
@@ -107,11 +107,11 @@ export class PluginService {
 				method: "GET"
 			});
 
-			if(resp.status === 200) {
+			if (resp.status === 200) {
 				const json = await resp.json();
 				return json.results[0].formatted_address;
 			}
-		} catch(err) {
+		} catch (err) {
 			throw new Error(err);
 		}
 	}

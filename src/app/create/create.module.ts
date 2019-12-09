@@ -17,4 +17,4 @@ import { CreatePage } from './create.page';
   ],
   declarations: [CreatePage]
 })
-export class CreatePageModule {}
+export class CreatePageModule { }
